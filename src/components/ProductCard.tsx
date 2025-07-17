@@ -1,4 +1,3 @@
-// src/components/ProductCard.tsx
 import React, { useState } from 'react';
 import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
@@ -77,7 +76,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     <img
                         src={mainImage}
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover "
                     />
                 </div>
             </Link>

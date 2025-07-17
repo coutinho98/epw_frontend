@@ -1,8 +1,7 @@
-// src/pages/ProductsPage.tsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { Product } from '../types/Product';
-import { Variant } from '../types/Variant'; 
+import { Variant } from '../types/Variant';
 import ProductSection from '../components/ProductSection';
 
 interface ProductWithVariants extends Product {

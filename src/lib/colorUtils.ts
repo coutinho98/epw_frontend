@@ -1,6 +1,3 @@
-// src/lib/colorUtils.ts
-
-// Mapeamento de cores
 export const COLOR_MAP: { [key: string]: string } = {
     'preto': '#000000',
     'black': '#000000',
@@ -28,28 +25,23 @@ export const COLOR_MAP: { [key: string]: string } = {
     'beige': '#f5f5dc',
 };
 
-// Nova e mais robusta função getColorValue
 export const getColorValue = (color: string): string => {
     const normalizedColor = color.toLowerCase().trim();
 
-    // Verifica se a cor está no nosso mapa
     if (COLOR_MAP[normalizedColor]) {
         return COLOR_MAP[normalizedColor];
     }
 
-    // Se a cor parece ser um código hex ou RGB, use-a diretamente
     if (normalizedColor.startsWith('#') || normalizedColor.startsWith('rgb')) {
         return normalizedColor;
     }
 
-    // Tenta validar como uma cor nomeada CSS
     const s = new Option().style;
     s.color = normalizedColor;
     if (s.color !== '') {
         return normalizedColor;
     }
 
-    // Valor padrão se a cor for inválida
     return '#CCCCCC';
 };
 
@@ -68,7 +60,7 @@ export const isLightColor = (color: string): boolean => {
         const g = parseInt(hex3.substring(2, 4), 16);
         const b = parseInt(hex3.substring(4, 6), 16);
         const luminosity = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-        return luminosity > 186; // Um valor de corte para cores claras
+        return luminosity > 186;
     } else if (hex.length === 6) {
         const r = parseInt(hex.substring(0, 2), 16);
         const g = parseInt(hex.substring(2, 4), 16);
