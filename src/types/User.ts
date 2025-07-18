@@ -4,6 +4,6 @@ export interface User {
     firstName: string;
     lastName: string;
     isAdmin: boolean;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }

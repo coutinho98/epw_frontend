@@ -1,3 +1,5 @@
+import { Variant } from "./Variant";
+
 export interface Product {
     id: string;
     name: string;
@@ -8,6 +10,7 @@ export interface Product {
     isFeatured: boolean;
     isAvailable: boolean;
     categoryId: string | null;
+    variants: Variant[];
     color: string,
     createdAt: Date;
     updatedAt: Date;

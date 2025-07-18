@@ -33,25 +33,25 @@ const processQueue = (error: Error | null, newAccessToken: string | null = null)
 };
 
 async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    const accessToken = localStorage.getItem('accessToken');
+    const jwtToken = localStorage.getItem('jwt_token'); 
 
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...(options.headers as Record<string, string>),
     };
 
-    if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
+    if (jwtToken) {
+        headers['Authorization'] = `Bearer ${jwtToken}`;
     }
 
     const config: RequestOptions = {
         ...options,
         headers,
+        credentials: 'include', 
     };
 
     try {
         const response = await fetch(`${BASE_URL}${endpoint}`, config);
-
         if (response.status === 401 && !options.isRetry) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
@@ -59,20 +59,20 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
                 }) as Promise<T>;
             }
 
-            isRefreshing = true;
+            isRefreshing = true; 
 
             return new Promise<T>(async (resolve, reject) => {
                 try {
+                    // Tentar renovar o token
                     const refreshResponse = await fetch(`${BASE_URL}/auth/refresh`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
+                        credentials: 'include', 
                     });
 
                     if (!refreshResponse.ok) {
-                        localStorage.removeItem('accessToken');
-                        localStorage.removeItem('user');
-                        // TODO: Redirecionar para o login
+                        localStorage.removeItem('jwt_token');
+                        window.dispatchEvent(new CustomEvent('unauthorized-logout'));
                         processQueue(new Error('Sessão expirada. Faça login novamente.'));
                         reject(new Error('Sessão expirada. Faça login novamente.'));
                         return;
@@ -80,33 +80,33 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
 
                     const refreshData = await refreshResponse.json();
                     const newAccessToken = refreshData.accessToken;
-                    localStorage.setItem('accessToken', newAccessToken);
+                    localStorage.setItem('jwt_token', newAccessToken); 
 
                     const originalHeaders = config.headers as Record<string, string> || {};
                     const newConfigForOriginalRequest: RequestOptions = {
                         ...config,
                         headers: { ...originalHeaders, 'Authorization': `Bearer ${newAccessToken}` },
-                        isRetry: true
+                        isRetry: true 
                     };
                     const originalResponse = await fetch(`${BASE_URL}${endpoint}`, newConfigForOriginalRequest);
 
                     if (!originalResponse.ok) {
                         let errorData: any = {};
-                        try { errorData = await originalResponse.json(); } catch { }
+                        try { errorData = await originalResponse.json(); } catch { /* ignore */ }
                         throw new Error(errorData.message || originalResponse.statusText || 'Erro ao re-tentar requisição.');
                     }
 
                     const originalData = await originalResponse.json();
-                    processQueue(null, newAccessToken);
+                    processQueue(null, newAccessToken); 
                     resolve(originalData as T);
 
                 } catch (refreshError: any) {
-                    localStorage.removeItem('accessToken');
-                    localStorage.removeItem('user');
-                    processQueue(refreshError);
+                    localStorage.removeItem('jwt_token');
+                    window.dispatchEvent(new CustomEvent('unauthorized-logout'));
+                    processQueue(refreshError); 
                     reject(refreshError);
                 } finally {
-                    isRefreshing = false;
+                    isRefreshing = false; 
                 }
             });
         }
@@ -128,15 +128,17 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
         if (contentType && contentType.includes('application/json')) {
             return response.json() as Promise<T>;
         }
-        return null as T;
+        return null as T; 
     } catch (error) {
         throw error;
     }
 }
 
-export default {
+const api = {
     get: <T>(endpoint: string, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'GET', ...options }),
     post: <T>(endpoint: string, data: any, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'POST', body: JSON.stringify(data), ...options }),
     patch: <T>(endpoint: string, data: any, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'PATCH', body: JSON.stringify(data), ...options }),
     delete: <T>(endpoint: string, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'DELETE', ...options }),
 };
+
+export default api;

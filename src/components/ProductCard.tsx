@@ -63,29 +63,27 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
     const remainingColors = uniqueVariants.length - 3;
 
-    // preciso componentizar tudo depois, pensar em um refactor
-
     return (
-        <div className="flex flex-col items-center">
-            <Link to={`/products/${product.slug}`}>
+        <div className="flex flex-col items-center w-full max-w-sm lg:mr-20">
+            <Link to={`/products/${product.slug}`} className="w-full">
                 <div
-                    className="w-[331px] h-[441px] relative"
+                    className="relative w-full aspect-[3/4]"
                     onMouseEnter={handleImageHover}
                     onMouseLeave={handleImageLeave}
                 >
                     <img
                         src={mainImage}
                         alt={product.name}
-                        className="w-full h-full object-cover "
+                        className="w-full h-full object-cover"
                     />
                 </div>
             </Link>
             <div className="mt-2 text-center">
                 <h3 className="text-white line-clamp-1">{product.name}</h3>
-                <p className="text-white font-bold">R$ {product.price.toFixed(2)}</p>
+                <p className="text-white font-bold">R${product.price.toFixed(2)}</p>
             </div>
             {uniqueVariants.length > 0 && (
-                <div className="flex items-center space-x-2 mt-2">
+                <div className="flex items-center space-x-2 mt-4 mb-30">
                     {uniqueVariants.slice(0, 3).map((variant) => (
                         <ColorVariantDot
                             key={variant.id}
