@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import { useIsMobile } from '../hooks/use-mobile';
 import {
     Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetDescription,
+    SheetContent
 } from './ui/sheet';
 
 interface SidebarProps {
@@ -15,7 +12,7 @@ interface SidebarProps {
 }
 
 const sidebarLinks = [
-    { title: '★ MAIS VENDIDOS', href: '/products/bestsellers' },
+    { title: '★ MAIS VENDIDOS', href: '/products' },
     { title: 'porque vestir @empowerfitness?', href: '/about' },
     { title: 'top', href: '/products/make-book' },
     { title: 'legging', href: '/products' },

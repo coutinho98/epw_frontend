@@ -7,6 +7,6 @@ export interface Variant {
     stock: number;
     additionalPrice: number;
     imageUrls: string[];
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }

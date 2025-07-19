@@ -34,8 +34,9 @@ const ColorVariantDot = ({
             className={`${sizeClasses[size]} rounded-full cursor-pointer transition-all duration-200
                 ${isSelected ? 'ring-2 ring-white' : ''}`}
             style={{ backgroundColor: colorValue }}
-            title={color}
-        />
+            title={color}>
+        </div>
+
     );
 };
 
