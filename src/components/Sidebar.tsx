@@ -15,7 +15,7 @@ const sidebarLinks = [
     { title: '★ MAIS VENDIDOS', href: '/products' },
     { title: 'porque vestir @empowerfitness?', href: '/about' },
     { title: 'top', href: '/products/make-book' },
-    { title: 'legging', href: '/products' },
+    { title: 'legging', href: '/products111' },
     { title: 'short', href: '/products1' },
     { title: 'outlet', href: '/products2' },
     { title: 'hidratação', href: '/products3' },

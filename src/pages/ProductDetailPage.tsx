@@ -9,14 +9,14 @@ import api from '../services/api';
 const ProductDetailPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const [product, setProduct] = useState<(Product & { variants: Variant[] }) | null>(null);
-    const [mainImage, setMainImage] = useState<string>('');
-    const [allVariantImages, setAllVariantImages] = useState<string[]>([]);
+    const [_mainImage, setMainImage] = useState<string>('');
+    const [_allVariantImages, setAllVariantImages] = useState<string[]>([]);
     const [selectedColorVariant, setSelectedColorVariant] = useState<string | null>(null);
     const [availableSizesForColor, setAvailableSizesForColor] = useState<string[]>([]);
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const [_loading, setLoading] = useState<boolean>(true);
+    const [_error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -253,11 +253,11 @@ const ProductDetailPage: React.FC = () => {
                 </div>
                 <div className="lg:w-1/2 flex flex-col justify-start">
                     <h1 className="text-3xl lg:text-4xl mb-4">{product.name}</h1>
-                    <p className="text-sm lg:text-sm mb-8 text-white">R$ {product.price.toFixed(2)}</p>
+                    <p className="text-sm lg:text-sm mb-3 text-white">R$ {product.price.toFixed(2)}</p>
                     {product.variants && product.variants.length > 0 && (
                         <div className="mb-8">
-                            <h3 className="text-xl mb-4">Selecione a cor: <span className="font-bold">{selectedColorVariant}</span></h3>
-                            <div className="flex flex-wrap gap-3">
+                            <h3 className="text-sm mb-3">Selecione a cor: <span className="font-bold">{selectedColorVariant}</span></h3>
+                            <div className="flex flex-wrap gap-6">
                                 {uniqueColorsForDisplay.map(color => (
                                     <ColorVariantDot
                                         key={color}
@@ -279,7 +279,7 @@ const ProductDetailPage: React.FC = () => {
                                         variant={selectedSize === size ? 'default' : 'outline'}
                                         onClick={() => handleSizeClick(size)}
                                         className={`min-w-[60px] h-12 text-base ${selectedSize === size
-                                            ? 'text-white'
+                                            ? 'text-white border border-2'
                                             : 'bg-transparent border-neutral-900'
                                             }`}
                                     >
