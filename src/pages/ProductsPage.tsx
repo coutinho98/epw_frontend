@@ -10,8 +10,8 @@ interface ProductWithVariants extends Product {
 
 const ProductsPage = () => {
     const [products, setProducts] = useState<ProductWithVariants[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [_isLoading, setIsLoading] = useState(true);
+    const [_error, setError] = useState('');
 
     useEffect(() => {
         const fetchProductsAndVariants = async () => {
