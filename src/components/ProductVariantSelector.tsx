@@ -1,11 +1,14 @@
-import ColorVariantDot from "./ColorVariantDot";
-import { Button } from "./ui/button";
+// src/components/ProductVariantSelector.tsx
+import React from 'react';
+import ColorVariantDot from './ColorVariantDot';
+import { Button } from './ui/button';
 
 interface ProductVariantSelectorProps {
     uniqueColorsForDisplay: string[];
     selectedColorVariant: string | null;
     onSelectColor: (color: string) => void;
     availableSizesForColor: string[];
+    allPossibleSizes: string[];
     selectedSize: string | null;
     onSelectSize: (size: string) => void;
 }
@@ -15,6 +18,7 @@ const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
     selectedColorVariant,
     onSelectColor,
     availableSizesForColor,
+    allPossibleSizes, 
     selectedSize,
     onSelectSize,
 }) => {
@@ -35,26 +39,29 @@ const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
                     </div>
                 </div>
             )}
-            {availableSizesForColor.length > 0 && (
-                <div className="mb-8">
-                    <h3 className="text-sm mb-2">Selecione o tamanho <span className='ml-1 underline underline-offset-4 cursor-pointer hover:text-gray-300'>Guia de Tamanho</span></h3>
-                    <div className="flex flex-wrap gap-3">
-                        {availableSizesForColor.map(size => (
+            <div className="mb-8">
+                <h3 className="text-sm mb-2">Selecione o tamanho <span className='ml-1 underline underline-offset-4 cursor-pointer hover:text-gray-300'>Guia de Tamanho</span></h3>
+                <div className="flex flex-wrap gap-3">
+                    {allPossibleSizes.map(size => { 
+                        const isAvailable = availableSizesForColor.includes(size); 
+                        return (
                             <Button
                                 key={size}
-                                variant={selectedSize === size ? 'default' : 'outline'}
-                                onClick={() => onSelectSize(size)}
-                                className={`min-w-[60px] h-12 text-base ${selectedSize === size
+                                variant={selectedSize === size && isAvailable ? 'default' : 'outline'} 
+                                onClick={() => isAvailable && onSelectSize(size)} 
+                                disabled={!isAvailable} 
+                                className={`min-w-[60px] h-12 text-base ${selectedSize === size && isAvailable
                                     ? 'text-white border border-2'
                                     : 'bg-transparent border-neutral-900'
-                                    }`}
+                                    } ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''} // Estilo para desabilitado
+                                }`}
                             >
                                 {size}
                             </Button>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
-            )}
+            </div>
         </>
     );
 };

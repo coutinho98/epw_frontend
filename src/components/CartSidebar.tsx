@@ -2,9 +2,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Button } from './ui/button';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
-import { XIcon, MinusIcon, PlusIcon, ShoppingCartIcon } from 'lucide-react'; 
+import { XIcon, MinusIcon, PlusIcon, ShoppingCartIcon } from 'lucide-react';
 
-interface CartSidebarProps {}
+interface CartSidebarProps { }
 
 const CartSidebar: React.FC<CartSidebarProps> = () => {
     const { cartItems, isCartOpen, toggleCart, removeItem, updateItemQuantity, cartTotal, cartItemCount } = useCart();
@@ -15,37 +15,37 @@ const CartSidebar: React.FC<CartSidebarProps> = () => {
 
     return (
         <Sheet open={isCartOpen} onOpenChange={toggleCart}>
-            <SheetContent side="right" className="w-full sm:max-w-md flex flex-col bg-black text-white border-black">
+            <SheetContent side="right" className="w-full sm:max-w-md flex flex-col text-white bg-black border-black">
                 <SheetHeader className="p-4">
                     <SheetTitle className="text-2xl font-bold flex items-center gap-2">
                         <ShoppingCartIcon className="h-6 w-6" />
                         Seu Carrinho ({cartItemCount})
                     </SheetTitle>
-                    <SheetDescription className="text-gray-400">
+                    <SheetDescription className="text-white text-3xl">
                         Adicionado ao carrinho
                     </SheetDescription>
                 </SheetHeader>
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {cartItems.length === 0 ? (
-                        <div className="text-center text-gray-400 mt-10">
+                        <div className="text-center text-white mt-10">
                             <p>Seu carrinho está vazio.</p>
                             <Link to="/products">
-                                <Button onClick={toggleCart} className="mt-4 bg-gray-700 text-white hover:bg-gray-600">
+                                <Button onClick={toggleCart} className="mt-4 bg-white text-black hover:bg-gray-300">
                                     Continue Comprando
                                 </Button>
                             </Link>
                         </div>
                     ) : (
                         cartItems.map(item => (
-                            <div key={item.variantId} className="flex items-center gap-4 border-b border-gray-800 pb-4 last:border-b-0">
+                            <div key={item.variantId} className="flex items-center gap-7 border-b border-black pb-4">
                                 <img
                                     src={item.imageUrl}
                                     alt={item.productName}
-                                    className="w-20 h-20 object-cover rounded-md flex-shrink-0"
+                                    className="w-30 h-30 object-cover flex-shrink-0"
                                 />
                                 <div className="flex-1">
-                                    <h4 className="font-semibold text-lg">{item.productName}</h4>
-                                    <p className="text-sm text-gray-400">Cor: {item.color} / Tamanho: {item.size}</p>
+                                    <h4 className="text-lg">{item.productName}</h4>
+                                    <p className="text-xs text-white">Cor: {item.color} / Tamanho: {item.size}</p>
                                     <p className="font-bold text-md">R$ {(item.price * item.quantity).toFixed(2)}</p>
                                     <div className="flex items-center mt-2">
                                         <Button

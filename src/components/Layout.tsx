@@ -22,7 +22,7 @@ const Layout: React.FC = () => {
                         <div className="hidden md:block  pr-2 flex-shrink-0"></div>
                         <div className="flex items-center md:hidden">
                             <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-                                <MenuIcon className="h-6 w-6" />
+                                <MenuIcon className="h-10 w-10" />
                                 <span className="sr-only">Toggle Menu</span>
                             </Button>
                         </div>
@@ -39,7 +39,7 @@ const Layout: React.FC = () => {
                                 <WalletIcon className="h-5 w-5" />
                                 <span className="sr-only">Cart</span>
                                 {cartItemCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold  h-5 w-5 flex items-center justify-center">
                                         {cartItemCount}
                                     </span>
                                 )}

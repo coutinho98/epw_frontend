@@ -21,6 +21,8 @@ const ProductDetailPage: React.FC = () => {
 
     const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
 
+    const allPossibleSizes = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'XXG'];
+
     useEffect(() => {
         const fetchProduct = async () => {
             if (!slug) {
@@ -86,6 +88,8 @@ const ProductDetailPage: React.FC = () => {
 
                         if (sizesForFirstColor.length > 0) {
                             setSelectedSize(sizesForFirstColor[0]);
+                        } else {
+                            setSelectedSize(null); 
                         }
                     } else {
                         setImagesToDisplay((fetchedProduct.mainImageUrl && fetchedProduct.mainImageUrl) || []);
@@ -137,7 +141,7 @@ const ProductDetailPage: React.FC = () => {
                 setSelectedSize(null);
             }
         }
-    }, [selectedColorVariant, product]);
+    }, [selectedColorVariant, product, selectedSize]);
 
     if (loading) {
         return (
@@ -165,7 +169,6 @@ const ProductDetailPage: React.FC = () => {
         );
     }
 
-    // Prepara dados para ProductVariantSelector
     const uniqueColorsForDisplay = Array.from(new Set(product.variants.map(v => v.color)));
     if (product.color && !uniqueColorsForDisplay.includes(product.color)) {
         uniqueColorsForDisplay.unshift(product.color);
@@ -187,6 +190,7 @@ const ProductDetailPage: React.FC = () => {
                             selectedColorVariant={selectedColorVariant}
                             onSelectColor={setSelectedColorVariant}
                             availableSizesForColor={availableSizesForColor}
+                            allPossibleSizes={allPossibleSizes} 
                             selectedSize={selectedSize}
                             onSelectSize={setSelectedSize}
                         />
