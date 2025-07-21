@@ -1,6 +1,8 @@
 import { Button } from './ui/button';
 import { Product } from '../types/Product';
-import { Variant } from '@/types/Variant';
+import { Variant } from '../types/Variant';
+import { useCart } from '../context/CartContext';
+import { CartItem } from '../types/Cart';
 
 interface AddToCartButtonProps {
     product: Product & { variants: Variant[] } | null;
@@ -15,6 +17,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     selectedSize,
     quantity,
 }) => {
+    const { addItem } = useCart();
+
     const handleAddToCart = () => {
         if (!product) return;
 
@@ -23,13 +27,23 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         );
 
         if (!finalSelectedVariant) {
-            alert('Por favor, selecione uma cor e um tamanho válidos.');
             return;
         }
-        //teste
-        alert(`Adicionado ao carrinho:\n\nProduto: ${product.name}\nCor: ${finalSelectedVariant.color}\nTamanho: ${finalSelectedVariant.size}\nPreço: R$${product.price.toFixed(2)}\nQuantidade: ${quantity}`);
 
-        console.log(`Adicionado ao carrinho: ${product.name}, ID da Variante: ${finalSelectedVariant.id}, Cor: ${finalSelectedVariant.color}, Tamanho: ${finalSelectedVariant.size}, Quantidade: ${quantity}`);
+        const itemToAdd: CartItem = {
+            productId: product.id,
+            productName: product.name,
+            variantId: finalSelectedVariant.id,
+            color: finalSelectedVariant.color,
+            size: finalSelectedVariant.size,
+            imageUrl: finalSelectedVariant.imageUrls?.[0] || product.mainImageUrl?.[0] || '', 
+            price: product.price + finalSelectedVariant.additionalPrice,
+            quantity: quantity,
+        };
+
+        addItem(itemToAdd); 
+
+        console.log(`Item adicionado ao carrinho:`, itemToAdd);
     };
 
     return (

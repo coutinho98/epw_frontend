@@ -3,9 +3,12 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { Button } from './ui/button';
 import { MenuIcon, UserRoundIcon, WalletIcon } from 'lucide-react';
+import CartSidebar from './CartSidebar';
+import { useCart } from '../context/CartContext'; 
 
 const Layout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { toggleCart, cartItemCount } = useCart(); 
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -32,9 +35,14 @@ const Layout: React.FC = () => {
                                 <UserRoundIcon className="h-5 w-5" />
                                 <span className="sr-only">Account</span>
                             </Button>
-                            <Button variant="ghost" size="icon" className="text-sm hover:text-gray-300">
+                            <Button variant="ghost" size="icon" onClick={toggleCart} className="text-sm hover:text-gray-300 relative">
                                 <WalletIcon className="h-5 w-5" />
                                 <span className="sr-only">Cart</span>
+                                {cartItemCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                        {cartItemCount}
+                                    </span>
+                                )}
                             </Button>
                         </div>
                     </div>
@@ -47,6 +55,7 @@ const Layout: React.FC = () => {
                     </main>
                 </div>
             </div>
+            <CartSidebar /> 
         </div>
     );
 };
