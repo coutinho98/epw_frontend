@@ -63,7 +63,7 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
 
             return new Promise<T>(async (resolve, reject) => {
                 try {
-                    // Tentar renovar o token
+                    // Tentar renovar o token - deu certo :)
                     const refreshResponse = await fetch(`${BASE_URL}/auth/refresh`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
