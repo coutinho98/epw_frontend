@@ -1,8 +1,10 @@
+// src/components/AddToCartButton.tsx
 import { Button } from './ui/button';
 import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
 import { useCart } from '../context/CartContext';
 import { CartItem } from '../types/Cart';
+import { toast } from 'sonner'; 
 
 interface AddToCartButtonProps {
     product: Product & { variants: Variant[] } | null;
@@ -27,6 +29,7 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         );
 
         if (!finalSelectedVariant) {
+            toast.error('Por favor, selecione uma cor e um tamanho válidos.');
             return;
         }
 
@@ -43,6 +46,11 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
 
         addItem(itemToAdd); 
 
+        toast.success(`${itemToAdd.productName} (${itemToAdd.size}, ${itemToAdd.color}) adicionado ao carrinho!`, {
+            description: `Quantidade: ${itemToAdd.quantity} - Total: R$${(itemToAdd.price * itemToAdd.quantity).toFixed(2)}`,
+            duration: 3000, 
+        });
+        
         console.log(`Item adicionado ao carrinho:`, itemToAdd);
     };
 

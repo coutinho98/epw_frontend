@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext'; 
+import { Toaster } from 'sonner';
 import LoginPage from './pages/LoginPage';
 import ProductsPage from './pages/ProductsPage';
 import Layout from './components/Layout';
@@ -18,6 +19,7 @@ const App = () => {
               <Route path="products/:slug" element={<ProductDetailPage />} />
             </Route>
           </Routes>
+          <Toaster position='top-center'/>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
