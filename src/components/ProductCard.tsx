@@ -75,6 +75,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                         src={mainImage}
                         alt={product.name}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                     />
                 </div>
             </Link>

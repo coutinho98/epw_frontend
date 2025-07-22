@@ -50,6 +50,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ images, produ
                         src={images[currentImageIndex]}
                         alt={`${productName} imagem ${currentImageIndex + 1}`}
                         className="w-full h-full object-contain transition-transform duration-300 ease-in-out"
+                        loading="lazy"
                     />
                     {images.length > 1 && (
                         <>

@@ -10,8 +10,8 @@ interface ProductWithVariants extends Product {
 
 const ProductsPage = () => {
     const [products, setProducts] = useState<ProductWithVariants[]>([]);
-    const [_isLoading, setIsLoading] = useState(true);
-    const [_error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchProductsAndVariants = async () => {
@@ -30,7 +30,6 @@ const ProductsPage = () => {
                 setProducts(productsWithVariants);
             } catch (err: any) {
                 setError(err.message || 'Falha ao carregar os produtos e suas variações.');
-                console.error('Failed to fetch products:', err);
             } finally {
                 setIsLoading(false);
             }

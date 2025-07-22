@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
 import api from '../services/api';
-
 import ProductImageGallery from '../components/ProductImageGallery';
 import ProductVariantSelector from '../components/ProductVariantSelector';
 import ProductQuantitySelector from '../components/ProductQuantitySelector';
@@ -21,7 +20,7 @@ const ProductDetailPage: React.FC = () => {
 
     const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
 
-    const allPossibleSizes = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'XXG'];
+    const allPossibleSizes = ['PP', 'P', 'M', 'G',];
 
     useEffect(() => {
         const fetchProduct = async () => {
