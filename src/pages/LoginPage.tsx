@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,7 +38,7 @@ const LoginPage = () => {
         try {
             await login(data);
             console.log('2. Login bem-sucedido no cliente. Tentando navegar.');
-            navigate('/products');
+            navigate('/'); 
         } catch (error) {
             setLoginError('Credenciais inválidas. Tente novamente.');
             console.error('Login error:', error);
@@ -88,9 +88,10 @@ const LoginPage = () => {
                     </Button>
                 </form>
                 <div className="text-sm w-full text-center mt-6">
-                    <a href="/register" className="text-white  hover:underline underline-offset-4">
+                    {/* Alterado de <a> para Link */}
+                    <Link to="/register" className="text-white hover:underline underline-offset-4">
                         Cadastre-se
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

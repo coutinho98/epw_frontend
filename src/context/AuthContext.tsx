@@ -24,6 +24,9 @@ interface AuthProviderProps {
     children: React.ReactNode;
 }
 
+const USER_KEY = 'user';
+const TOKEN_KEY = 'jwt_token';
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -31,30 +34,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const isAuthenticated = !!user;
     const isAdmin = user ? user.isAdmin : false;
 
-    // Função de login corrigida
     const login = async (credentials: AuthLoginDto) => {
-    try {
-        const response = await api.post<AuthResponse>('/auth/login', credentials);
-        setUser(response.user);
-        localStorage.setItem('accessToken', response.accessToken);
-        console.log('3. API de login respondeu com sucesso. Usuário e token salvos.');
-    } catch (error) {
-        console.error('Falha no login:', error);
-        throw new Error('Falha no login');
-    }
-};
+        try {
+            const response = await api.post<AuthResponse>('/auth/login', credentials);
+            setUser(response.user);
+            localStorage.setItem(TOKEN_KEY, response.accessToken);
+            localStorage.setItem(USER_KEY, JSON.stringify(response.user));
+            console.log('3. API de login respondeu com sucesso. Usuário e token salvos.');
+        } catch (error) {
+            console.error('Falha no login:', error);
+            throw new Error('Falha no login');
+        }
+    };
 
     const logout = () => {
-        api.post('/auth/logout', {}); 
+        api.post('/auth/logout', {});
         setUser(null);
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
     };
 
     useEffect(() => {
         const checkAuth = async () => {
-            const accessToken = localStorage.getItem('accessToken');
-            if (accessToken) {
-                
+            const jwtToken = localStorage.getItem(TOKEN_KEY);
+            const storedUser = localStorage.getItem(USER_KEY);
+            
+            if (jwtToken && storedUser) {
+                try {
+                    const parsedUser: User = JSON.parse(storedUser);
+                    setUser(parsedUser);
+                    console.log('Sessão restaurada com sucesso!');
+                } catch (error) {
+                    console.error('Falha ao restaurar sessão:', error);
+                    // Limpe o localStorage se houver erro ao restaurar
+                    localStorage.removeItem(TOKEN_KEY);
+                    localStorage.removeItem(USER_KEY);
+                    setUser(null);
+                }
             }
             setLoading(false);
         };

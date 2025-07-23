@@ -1,14 +1,24 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { Button } from './ui/button';
 import { MenuIcon, UserRoundIcon, WalletIcon } from 'lucide-react';
 import CartSidebar from './CartSidebar';
-import { useCart } from '../context/CartContext'; 
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 const Layout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const { toggleCart, cartItemCount } = useCart(); 
+    const { toggleCart, cartItemCount } = useCart();
+    const { isAuthenticated, user, logout } = useAuth();
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -19,10 +29,10 @@ const Layout: React.FC = () => {
             <div className="max-w-screen-2xl mx-auto px-4 md:px-8 w-full">
                 <nav className="sticky top-0 z-50 h-20 flex items-center">
                     <div className="flex items-center justify-between w-full">
-                        <div className="hidden md:block  pr-2 flex-shrink-0"></div>
+                        <div className="hidden md:block pr-2 flex-shrink-0"></div>
                         <div className="flex items-center md:hidden">
                             <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-                                <MenuIcon className="h-10 w-10" />
+                                <MenuIcon className="h-6 w-6" />
                                 <span className="sr-only">Toggle Menu</span>
                             </Button>
                         </div>
@@ -31,15 +41,40 @@ const Layout: React.FC = () => {
                         </div>
 
                         <div className="flex items-center space-x-4">
-                            <Button variant="ghost" size="icon" className="hidden sm:flex text-sm hover:text-gray-300">
-                                <UserRoundIcon className="h-5 w-5" />
-                                <span className="sr-only">Account</span>
-                            </Button>
+                            {isAuthenticated ? (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="hidden sm:flex text-sm hover:text-gray-300">
+                                            <UserRoundIcon className="h-5 w-5" />
+                                            <span className="sr-only">Conta</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-56">
+                                        <DropdownMenuLabel>Olá, {user?.firstName}</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                            <Link to="/orders">Meus Pedidos</Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link to="/cart">Carrinho</Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={logout}>Sair</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            ) : (
+                                <Link to="/login" className="hidden sm:flex text-sm hover:text-gray-300">
+                                    <Button variant="ghost" size="icon">
+                                        <UserRoundIcon className="h-5 w-5" />
+                                        <span className="sr-only">Login</span>
+                                    </Button>
+                                </Link>
+                            )}
                             <Button variant="ghost" size="icon" onClick={toggleCart} className="text-sm hover:text-gray-300 relative">
                                 <WalletIcon className="h-5 w-5" />
                                 <span className="sr-only">Cart</span>
                                 {cartItemCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold  h-5 w-5 flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
                                         {cartItemCount}
                                     </span>
                                 )}
@@ -55,7 +90,7 @@ const Layout: React.FC = () => {
                     </main>
                 </div>
             </div>
-            <CartSidebar /> 
+            <CartSidebar />
         </div>
     );
 };

@@ -1,10 +1,10 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useIsMobile } from '../hooks/use-mobile';
 import {
     Sheet,
     SheetContent
 } from './ui/sheet';
+import { useAuth } from '@/context/AuthContext';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -12,7 +12,7 @@ interface SidebarProps {
 }
 
 const sidebarLinks = [
-    { title: '★ MAIS VENDIDOS', href: '/products' },
+    { title: '★ MAIS VENDIDOS', href: '/' },
     { title: 'porque vestir @empowerfitness?', href: '/about' },
     { title: 'top', href: '/products/make-book' },
     { title: 'legging', href: '/products111' },
@@ -24,19 +24,29 @@ const sidebarLinks = [
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     const isMobile = useIsMobile();
+    const { user, isAuthenticated } = useAuth();
 
     const renderSidebarLinks = () => (
-        <nav className="space-y-1 p-4 md:p-0"> 
+        <nav className="space-y-1 p-4 md:p-0">
             {sidebarLinks.map((link) => (
                 <Link
                     key={link.href}
                     to={link.href}
-                    onClick={onClose} 
+                    onClick={onClose}
                     className="block py-1 text-base text-white hover:underline underline-offset-4 px-2"
                 >
                     {link.title}
                 </Link>
             ))}
+            {isAuthenticated && user?.isAdmin && (
+                <Link
+                    to="/admin/products"
+                    onClick={onClose}
+                    className="block py-1 text-base text-white hover:underline underline-offset-4 px-2 bg-red-600 font-bold mt-4"
+                >
+                    Admin
+                </Link>
+            )}
         </nav>
     );
 
@@ -53,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     }
 
     return (
-        <aside className="w-48 flex-shrink-0 pr-8 sticky top-20 hidden md:block h-fit"> 
+        <aside className="w-48 flex-shrink-0 pr-8 sticky top-20 hidden md:block h-fit">
             {renderSidebarLinks()}
         </aside>
     );

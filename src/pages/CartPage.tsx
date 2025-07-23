@@ -27,11 +27,10 @@ const CartPage: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 md:p-8 text-white min-h-[calc(100vh-120px)]">
-            <h1 className="text-3xl lg:text-4xl font-bold mb-8">
-                Seu Carrinho ({cartItemCount} {cartItemCount === 1 ? 'item' : 'itens'}) - R$ {cartTotal.toFixed(2)}
+            <h1 className="text-2xl lg:text-3xl mb-8">
+                {cartItemCount} {cartItemCount === 1 ? 'item' : 'itens'} no seu carrinho por  R$ {cartTotal.toFixed(2)}
             </h1>
 
-            {/* Layout para desktop */}
             <Table className="cart-table-desktop">
                 <TableHeader>
                     <TableRow>
