@@ -1,3 +1,5 @@
+/* src/index.css */
+
 @layer theme, base, components, utilities;
 @import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
 @import "./theme.css" layer(theme);
@@ -121,3 +123,78 @@
     @apply bg-black;
     font-family: 'Poppins', sans-serif;
   }}
+
+@layer utilities {
+  .disabled-vertical-line {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .disabled-vertical-line::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: 2px;
+    background-color: rgba(255, 255, 255, 0.6);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Estilos para telas maiores (acima de um certo breakpoint, ex: 768px) */
+  @media (min-width: 768px) {
+    .cart-table-desktop {
+      display: table;
+    }
+    .cart-list-mobile {
+      display: none;
+    }
+  }
+
+  /* Estilos para telas menores (abaixo do breakpoint) */
+  @media (max-width: 767px) {
+    .cart-table-desktop {
+      display: none;
+    }
+    .cart-list-mobile {
+      display: grid;
+      gap: 1rem;
+    }
+    .cart-item-mobile {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid #333;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+    .cart-item-mobile:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .mobile-item-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .mobile-item-details {
+      margin-bottom: 0.5rem;
+    }
+    .mobile-item-quantity {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .mobile-item-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .mobile-item-subtotal {
+      font-weight: bold;
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { Register } from '@/types/Register';
 import api from './api';
 
 interface LoginCredentials {
@@ -28,6 +29,7 @@ export const loginUser = async (credentials: LoginCredentials): Promise<LoginRes
         throw error;
     }
 };
+
 export const logoutUser = async (): Promise<void> => {
     try {
         await api.post<void>('/auth/logout', {});
@@ -36,4 +38,15 @@ export const logoutUser = async (): Promise<void> => {
         console.error('error na req logou', error)
         throw error;
     }
-};
+}
+
+
+export const registerUser = async (userData: Register): Promise<{ message: string }> => {
+    try {
+        const response = await api.post<{ message: string }>('/users', userData);
+        return response;
+    } catch (error: any) {
+        console.error('Erro na requisição de registro:', error);
+        throw error;
+    }
+}

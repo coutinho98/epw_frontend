@@ -88,7 +88,7 @@ const LoginPage = () => {
                     </Button>
                 </form>
                 <div className="text-sm w-full text-center mt-6">
-                    <a href="/register" className="text-white underline underline-offset-4">
+                    <a href="/register" className="text-white  hover:underline underline-offset-4">
                         Cadastre-se
                     </a>
                 </div>

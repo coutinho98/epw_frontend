@@ -1,11 +1,9 @@
-// src/context/AuthContext.tsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import React from 'react';
 import api from '../services/api';
 import { User } from '../types/User';
 import { AuthLoginDto } from '../types/AuthLoginDto';
 
-// Defina a interface para a resposta da API de login
 interface AuthResponse {
     accessToken: string;
     user: User;
@@ -47,7 +45,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 };
 
     const logout = () => {
-        api.post('/auth/logout', {}); // A chamada para logout precisa de um corpo vazio.
+        api.post('/auth/logout', {}); 
         setUser(null);
         localStorage.removeItem('accessToken');
     };
@@ -56,8 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const checkAuth = async () => {
             const accessToken = localStorage.getItem('accessToken');
             if (accessToken) {
-                // Aqui você pode adicionar uma chamada para validar o token ou buscar o perfil do usuário
-                // Se falhar, a rota protegida irá redirecionar
+                
             }
             setLoading(false);
         };
