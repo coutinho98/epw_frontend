@@ -27,13 +27,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     const { user, isAuthenticated } = useAuth();
 
     const renderSidebarLinks = () => (
-        <nav className="space-y-1 p-4 md:p-0">
+        <nav className="space-y-1 p-4 ml-2 md:p-0">
             {sidebarLinks.map((link) => (
                 <Link
                     key={link.href}
                     to={link.href}
                     onClick={onClose}
-                    className="block py-1 text-base text-white hover:underline underline-offset-4 px-2"
+                    className="block mt-6 text-base text-white hover:underline underline-offset-4 "
                 >
                     {link.title}
                 </Link>

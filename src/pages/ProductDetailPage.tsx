@@ -174,12 +174,12 @@ const ProductDetailPage: React.FC = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 md:p-8 text-white">
+        <div className="container mx-auto p-4 md:p-8 text-pink">
             <div className="flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-1/2">
                     <ProductImageGallery images={imagesToDisplay} productName={product.name} />
                 </div>
-                <div className="lg:w-1/2 flex flex-col justify-start">
+                <div className="lg:w-1/2 flex flex-col justify-start sticky top-20 h-fit">
                     <h1 className="text-3xl lg:text-4xl mb-4">{product.name}</h1>
                     <p className="text-sm lg:text-sm mb-3 text-white">R$ {product.price.toFixed(2)}</p>
 
