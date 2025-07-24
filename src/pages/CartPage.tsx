@@ -67,7 +67,7 @@ const CartPage = () => {
                                         <div className="flex flex-col min-w-0">
                                             <span className="text-sm sm:text-base truncate">{item.productName}</span>
                                             <span className="text-sm sm:text-base text-muted-foreground text-white">
-                                                Cor: {item.color}, {item.size}
+                                                {item.color}, {item.size}
                                             </span>
                                         </div>
                                     </Link>

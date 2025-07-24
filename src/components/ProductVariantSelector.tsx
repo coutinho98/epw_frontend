@@ -1,3 +1,4 @@
+import React from 'react';
 import ColorVariantDot from './ColorVariantDot';
 import { Button } from './ui/button';
 
@@ -49,7 +50,7 @@ const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
                                 onClick={() => isAvailable && onSelectSize(size)} 
                                 disabled={!isAvailable} 
                                 className={`min-w-[60px] h-12 text-base ${selectedSize === size && isAvailable
-                                    ? 'text-white border border-2'
+                                    ? 'text-white border'
                                     : 'bg-transparent border-neutral-900'
                                     } ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''} // Estilo para desabilitado
                                 }`}

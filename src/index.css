@@ -154,7 +154,6 @@ input[type="number"] {
     pointer-events: none;
   }
 
-  /* Estilos para telas maiores (acima de um certo breakpoint, ex: 768px) */
   @media (min-width: 768px) {
     .cart-table-desktop {
       display: table;
@@ -164,7 +163,6 @@ input[type="number"] {
     }
   }
 
-  /* Estilos para telas menores (abaixo do breakpoint) */
   @media (max-width: 767px) {
     .cart-table-desktop {
       display: none;

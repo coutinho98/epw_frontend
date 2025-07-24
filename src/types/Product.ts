@@ -5,6 +5,7 @@ export interface Product {
     name: string;
     description: string | null;
     slug: string;
+    size: string;
     price: number;
     mainImageUrl: string[];
     isFeatured: boolean;
