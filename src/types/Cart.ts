@@ -5,8 +5,10 @@ export interface CartItem {
     color: string;
     size: string;
     imageUrl: string;
+    name: string;
     price: number;
     quantity: number;
+    slug: string;
 }
 
 export interface CartContextType {

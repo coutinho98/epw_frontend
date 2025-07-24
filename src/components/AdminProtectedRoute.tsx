@@ -1,21 +1,25 @@
 import { useAuth } from "@/context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 const AdmionProtectedRoute: React.FC = () => {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, loading } = useAuth();
+
+ 
+    if (loading) {
+        return <div>Carregando...</div>;
+    }
 
     if (!isAuthenticated || !user?.isAdmin) {
         if (isAuthenticated && !user?.isAdmin) {
-            toast.error("not permission")
+            toast.error("Você não tem permissão para acessar esta página.");
         } else {
-            toast.error("u need to login")
+            toast.error("Você precisa estar logado.");
         }
-        return <Navigate to="/" replace />
+        return <Navigate to="/login" replace />; 
     }
 
-    return <Outlet />
-    
-}
+    return <Outlet />;
+};
 
 export default AdmionProtectedRoute;

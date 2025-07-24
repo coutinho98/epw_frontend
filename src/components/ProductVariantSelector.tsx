@@ -1,5 +1,3 @@
-// src/components/ProductVariantSelector.tsx
-import React from 'react';
 import ColorVariantDot from './ColorVariantDot';
 import { Button } from './ui/button';
 

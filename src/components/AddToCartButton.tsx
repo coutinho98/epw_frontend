@@ -1,10 +1,9 @@
-// src/components/AddToCartButton.tsx
 import { Button } from './ui/button';
 import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
 import { useCart } from '../context/CartContext';
 import { CartItem } from '../types/Cart';
-import { toast } from 'sonner'; 
+import { toast } from 'sonner';
 
 interface AddToCartButtonProps {
     product: Product & { variants: Variant[] } | null;
@@ -22,7 +21,10 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     const { addItem } = useCart();
 
     const handleAddToCart = () => {
-        if (!product) return;
+        if (!product) {
+            toast.error("Erro: Produto não encontrado.");
+            return;
+        }
 
         const finalSelectedVariant = product.variants.find(
             v => v.color === selectedColorVariant && v.size === selectedSize
@@ -39,7 +41,9 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
             variantId: finalSelectedVariant.id,
             color: finalSelectedVariant.color,
             size: finalSelectedVariant.size,
+            slug: product.slug, 
             imageUrl: finalSelectedVariant.imageUrls?.[0] || product.mainImageUrl?.[0] || '', 
+            name: product.name,
             price: product.price + finalSelectedVariant.additionalPrice,
             quantity: quantity,
         };

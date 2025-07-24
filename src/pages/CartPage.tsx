@@ -1,161 +1,181 @@
-import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { Button } from '../components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { MinusIcon, PlusIcon, XIcon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useCart } from '@/context/CartContext';
+import { useNavigate, Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import ProductQuantitySelector from '@/components/ProductQuantitySelector';
 
-const CartPage: React.FC = () => {
-    const { cartItems, removeItem, updateItemQuantity, cartTotal, cartItemCount } = useCart();
+const CartPage = () => {
+    const { cartItems, cartTotal, removeItem, updateItemQuantity } = useCart();
+    const navigate = useNavigate();
 
-    const handleQuantityChange = (variantId: string, currentQuantity: number, delta: number) => {
-        updateItemQuantity(variantId, currentQuantity + delta);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    const handleCheckoutNavigation = () => {
+        if (cartItems.length === 0) {
+            toast.error('Seu carrinho está vazio.');
+            return;
+        }
+        navigate('/checkout');
     };
 
-    if (cartItems.length === 0) {
-        return (
-            <div className="container mx-auto p-4 md:p-8 text-white min-h-[calc(100vh-120px)] flex flex-col items-center justify-center">
-                <h2 className="text-3xl font-bold mb-4">Seu Carrinho está Vazio</h2>
-                <p className="text-gray-400 mb-8">Parece que você ainda não adicionou nenhum item.</p>
-                <Link to="/products">
-                    <Button className="bg-white text-black hover:bg-gray-300">
-                        Voltar para Compras
-                    </Button>
-                </Link>
-            </div>
-        );
-    }
-
-    return (
-        <div className="container mx-auto p-4 md:p-8 text-white min-h-[calc(100vh-120px)]">
-            <h1 className="text-2xl lg:text-3xl mb-8">
-                {cartItemCount} {cartItemCount === 1 ? 'item' : 'itens'} no seu carrinho por  R$ {cartTotal.toFixed(2)}
-            </h1>
-
-            <Table className="cart-table-desktop">
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-[100px] text-white">Produto</TableHead>
-                        <TableHead className='text-white'>Detalhes</TableHead>
-                        <TableHead className="text-center text-white">Preço</TableHead>
-                        <TableHead className="text-center text-white">Quantidade</TableHead>
-                        <TableHead className="text-right text-white">Subtotal</TableHead>
-                        <TableHead className="text-right text-white">Ações</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {cartItems.map((item) => (
-                        <TableRow key={item.variantId}>
-                            <TableCell>
-                                <img src={item.imageUrl} alt={item.productName} className="w-16 h-16 object-cover rounded-md" />
-                            </TableCell>
-                            <TableCell>
-                                <div className="">{item.productName}</div>
-                                <div className="text-sm ">{item.color}, {item.size}</div>
-                            </TableCell>
-                            <TableCell className="text-center">R$ {item.price.toFixed(2)}</TableCell>
-                            <TableCell className="text-center">
-                                <div className="flex items-center justify-center">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleQuantityChange(item.variantId, item.quantity, -1)}
-                                        className="px-2 py-1 h-8 text-white bg-zinc-900 hover:bg-zinc-800 border-gray-700"
-                                        disabled={item.quantity <= 1}
-                                    >
-                                        <MinusIcon className="h-4 w-4" />
-                                    </Button>
-                                    <span className="mx-2">{item.quantity}</span>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleQuantityChange(item.variantId, item.quantity, 1)}
-                                        className="px-2 py-1 h-8 text-white bg-zinc-900 hover:bg-zinc-800 border-gray-700"
-                                    >
-                                        <PlusIcon className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </TableCell>
-                            <TableCell className="text-right font-bold">R$ {(item.price * item.quantity).toFixed(2)}</TableCell>
-                            <TableCell className="text-right">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => removeItem(item.variantId)}
-                                    className="text-red-500 hover:text-red-400"
-                                >
-                                    <XIcon className="h-5 w-5" />
-                                </Button>
-                            </TableCell>
+    const renderDesktopLayout = () => (
+        <>
+            <div className="overflow-x-auto">
+                <Table className='border-none min-w-full'>
+                    <TableCaption>Uma lista dos produtos em seu carrinho.</TableCaption>
+                    <TableHeader>
+                        <TableRow className='border-none'>
+                            <TableHead className="w-[300px] sm:w-[400px] text-foreground font-semibold text-white">Item</TableHead>
+                            <TableHead className='text-right text-foreground font-semibold flex justify-end items-center text-white'>Quantidade</TableHead>
+                            <TableHead className='text-right text-foreground font-semibold text-white'>Preço</TableHead>
+                            <TableHead className='border-none w-[50px]'></TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {cartItems.map((item) => (
+                            <TableRow key={item.variantId} className="items-center border-none">
+                                <TableCell className='border-none'>
+                                    <Link
+                                        to={`/products/${item.slug}`}
+                                        className="flex items-center space-x-2 sm:space-x-4"
+                                    >
+                                        <img
+                                            src={item.imageUrl}
+                                            alt={item.productName}
+                                            className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 object-contain flex-shrink-0"
+                                        />
+                                        <div className="flex flex-col min-w-0">
+                                            <span className="text-sm sm:text-base truncate">{item.productName}</span>
+                                            <span className="text-sm sm:text-base text-muted-foreground text-white">
+                                                Cor: {item.color}, {item.size}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </TableCell>
+                                <TableCell className='text-right border-none'>
+                                    <div className="flex justify-end">
+                                        <ProductQuantitySelector
+                                            quantity={item.quantity}
+                                            onQuantityChange={(newQuantity) => updateItemQuantity(item.variantId, newQuantity)}
+                                        />
+                                    </div>
+                                </TableCell>
+                                <TableCell className='text-right text-sm sm:text-base border-none whitespace-nowrap'>
+                                    R$ {item.price.toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-right border-none">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeItem(item.variantId)}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        X
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
 
-            {/* Layout para mobile */}
-            <div className="cart-list-mobile">
-                {cartItems.map((item) => (
-                    <div key={item.variantId} className="cart-item-mobile">
-                        <div className="mobile-item-header">
-                            <img src={item.imageUrl} alt={item.productName} className="w-35 h-35 object-cover" />
-                            <div className="font-semibold">{item.productName}</div>
-                        </div>
-                        <div className="mobile-item-details text-sm">
-                            <div>{item.color}, {item.size}</div>
-                            <div className='mt-2'>R${item.price.toFixed(2)}</div>
-                        </div>
-                        <div className="mobile-item-quantity">
-                            Quantidade:
-                            <div className="flex items-center">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleQuantityChange(item.variantId, item.quantity, -1)}
-                                    className="px-2 py-1 h-8 text-white bg-zinc-900 hover:bg-zinc-800 border-gray-700"
-                                    disabled={item.quantity <= 1}
-                                >
-                                    <MinusIcon className="h-4 w-4" />
-                                </Button>
-                                <span className="mx-2">{item.quantity}</span>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleQuantityChange(item.variantId, item.quantity, 1)}
-                                    className="px-2 py-1 h-8 text-white bg-zinc-900 hover:bg-zinc-800 border-gray-700"
-                                >
-                                    <PlusIcon className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="mobile-item-subtotal">
-                            Subtotal: R$ {(item.price * item.quantity).toFixed(2)}
-                        </div>
-                        <div className="mobile-item-actions">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removeItem(item.variantId)}
-                                className="text-red-500 hover:text-red-400"
-                            >
-                                <XIcon className="h-5 w-5" />
-                            </Button>
+            <div className="mt-6 sm:mt-8 flex justify-end items-center text-lg sm:text-xl font-bold">
+                <span className="mr-4">Total:</span>
+                <span>R$ {cartTotal.toFixed(2)}</span>
+            </div>
+
+            <div className="mt-6 sm:mt-8 flex justify-end">
+                <Button onClick={handleCheckoutNavigation} className="w-full sm:w-auto">
+                    Finalizar Pedido
+                </Button>
+            </div>
+        </>
+    );
+
+    const renderMobileLayout = () => (
+        <div className="space-y-4 sm:space-y-6">
+            {cartItems.map((item) => (
+                <div key={item.variantId} className="flex space-x-3 sm:space-x-4 pb-4 last:border-b-0">
+                    <Link to={`/products/${item.slug}`} className="flex-shrink-0">
+                        <img
+                            src={item.imageUrl}
+                            alt={item.productName}
+                            className="h-24 w-24 sm:h-28 sm:w-28 object-contain"
+                        />
+                    </Link>
+                    <div className="flex-grow flex flex-col space-y-2 min-w-0">
+                        <Link to={`/products/${item.slug}`} className="text-sm sm:text-base truncate">
+                            {item.productName}
+                        </Link>
+                        <span className="text-sm sm:text-base text-muted-foreground text-white">
+                            {item.color}, {item.size}
+                        </span>
+
+                        <span className="text-sm sm:text-base font-semibold">R$ {item.price.toFixed(2)}</span>
+
+                        <div className="flex items-center justify-between mt-2">
+                            <ProductQuantitySelector
+                                quantity={item.quantity}
+                                onQuantityChange={(newQuantity) => updateItemQuantity(item.variantId, newQuantity)}
+                            />
                         </div>
                     </div>
-                ))}
-            </div>
 
-            <div className="flex justify-between items-center mt-4 p-4 border-t border-gray-800 md:flex-row flex-col-reverse md:gap-0 gap-4">
-                <Link to="/products">
-                    <Button variant="outline" className="bg-transparent border-white text-white hover:bg-zinc-900 w-full md:w-auto">
-                        Continuar Comprando
-                    </Button>
-                </Link>
-                <div className="text-right w-full md:w-auto">
-                    <div className="text-lg font-semibold">Total do Carrinho: R$ {cartTotal.toFixed(2)}</div>
-                    <Button className="bg-white text-black hover:bg-gray-300 mt-2 w-full md:w-auto">
-                        Prosseguir para o Checkout
-                    </Button>
+                    <div className="flex-shrink-0 flex items-start">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeItem(item.variantId)}
+                            className="h-8 w-8 p-0"
+                        >
+                            X
+                        </Button>
+                    </div>
                 </div>
+            ))}
+            <div className="mt-6 sm:mt-8 flex flex-col items-end space-y-4">
+                <div className="flex justify-between w-full text-lg sm:text-xl font-bold">
+                    <span>Total:</span>
+                    <span>R$ {cartTotal.toFixed(2)}</span>
+                </div>
+                <Button onClick={handleCheckoutNavigation} className="w-full">
+                    Finalizar Pedido
+                </Button>
             </div>
+        </div>
+    );
+
+    return (
+        <div className="container mx-auto p-4 sm:p-6 md:p-8 max-w-7xl">
+            <h1 className="text-xl sm:text-2xl md:text-3xl mb-6 sm:mb-8 font-bold">
+                {totalItems} {totalItems === 1 ? 'item' : 'itens'} no seu carrinho por R$ {cartTotal.toFixed(2)}
+            </h1>
+
+            {cartItems.length > 0 ? (
+                isMobile ? renderMobileLayout() : renderDesktopLayout()
+            ) : (
+                <p className="text-center text-gray-500 py-8">Seu carrinho está vazio.</p>
+            )}
         </div>
     );
 };

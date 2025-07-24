@@ -1,18 +1,20 @@
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
+import { toast } from 'sonner';
 
-interface ProtectedRouteProps {
-    children: React.ReactNode;
-}
+const PrivateRoute: React.FC = () => {
+  const { isAuthenticated, loading } = useAuth();
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-    const { isAuthenticated } = useAuth();
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
-    }
+  if (!isAuthenticated) {
+    toast.error('Você precisa estar logado para acessar esta página.');
+    return <Navigate to="/login" replace />;
+  }
 
-    return children;
+  return <Outlet />;
 };
 
-export default ProtectedRoute;
+export default PrivateRoute;

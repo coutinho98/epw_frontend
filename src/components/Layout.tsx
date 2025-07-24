@@ -53,7 +53,7 @@ const Layout: React.FC = () => {
                                         <DropdownMenuLabel>Olá, {user?.firstName}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem asChild>
-                                            <Link to="/orders">Meus Pedidos</Link>
+                                            <Link to="/orders-history">Meus Pedidos</Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild>
                                             <Link to="/cart">Carrinho</Link>

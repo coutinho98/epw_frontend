@@ -1,4 +1,3 @@
-// src/App.tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -13,6 +12,9 @@ import Layout from './components/Layout';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import AdminLayout from './components/AdminLayout';
 import AdminProductListPage from './pages/admin/AdminProductListPage';
+import CheckoutPage from './pages/CheckoutPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import OrderHistoryPage from './pages/OrderHistoryPage';
 
 const App = () => {
   return (
@@ -26,7 +28,13 @@ const App = () => {
               <Route path="/" element={<ProductsPage />} />
               <Route path="products/:slug" element={<ProductDetailPage />} />
               <Route path="cart" element={<CartPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
             </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="orders-history" element={<OrderHistoryPage />} />
+            </Route>
+
+
             <Route element={<AdminProtectedRoute />}>
               <Route path="admin" element={<AdminLayout />}>
                 <Route path="products" element={<AdminProductListPage />} />
