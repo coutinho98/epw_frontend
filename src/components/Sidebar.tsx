@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { href, Link } from 'react-router-dom';
 import { useIsMobile } from '../hooks/use-mobile';
 import {
     Sheet,
@@ -14,12 +14,13 @@ interface SidebarProps {
 const sidebarLinks = [
     { title: '★ MAIS VENDIDOS', href: '/' },
     { title: 'porque vestir @empowerfitness?', href: '/about' },
-    { title: 'top', href: '/products/make-book' },
-    { title: 'legging', href: '/products111' },
-    { title: 'short', href: '/products1' },
-    { title: 'outlet', href: '/products2' },
-    { title: 'hidratação', href: '/products3' },
-    { title: 'mochilas', href: '/product4s' },
+    { title: 'conjunto de short', href: '/conjunto-de-shorts' },
+    { title: 'conjunto de calça', href: '/conjunto-de-calca' },
+    { title: 'cropped/Top', href: '/cropped-top' },
+    { title: 'short', href: '/short' },
+    { title: 'macacão curto', href: '/macacao-curto' },
+    { title: 'macacão longo', href: '/macacao-longo' },
+    { title: 'blusas', href: '/blusas' }
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
