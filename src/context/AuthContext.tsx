@@ -40,7 +40,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setUser(response.user);
             localStorage.setItem(TOKEN_KEY, response.accessToken);
             localStorage.setItem(USER_KEY, JSON.stringify(response.user));
-            console.log('3. API de login respondeu com sucesso. Usuário e token salvos.');
         } catch (error) {
             console.error('Falha no login:', error);
             throw new Error('Falha no login');
@@ -63,10 +62,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 try {
                     const parsedUser: User = JSON.parse(storedUser);
                     setUser(parsedUser);
-                    console.log('Sessão restaurada com sucesso!');
                 } catch (error) {
                     console.error('Falha ao restaurar sessão:', error);
-                    // Limpe o localStorage se houver erro ao restaurar
                     localStorage.removeItem(TOKEN_KEY);
                     localStorage.removeItem(USER_KEY);
                     setUser(null);

@@ -23,6 +23,7 @@ export const COLOR_MAP: { [key: string]: string } = {
     'gray': '#808080',
     'bege': '#f5f5dc',
     'beige': '#f5f5dc',
+    'violeta': '#ee82ee'
 };
 
 export const getColorValue = (color: string): string => {

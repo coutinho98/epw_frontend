@@ -54,8 +54,6 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
             description: `Quantidade: ${itemToAdd.quantity} - Total: R$${(itemToAdd.price * itemToAdd.quantity).toFixed(2)}`,
             duration: 3000, 
         });
-        
-        console.log(`Item adicionado ao carrinho:`, itemToAdd);
     };
 
     return (

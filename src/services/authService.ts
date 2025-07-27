@@ -33,7 +33,6 @@ export const loginUser = async (credentials: LoginCredentials): Promise<LoginRes
 export const logoutUser = async (): Promise<void> => {
     try {
         await api.post<void>('/auth/logout', {});
-        console.log('logou success!!!')
     } catch (error) {
         console.error('error na req logou', error)
         throw error;

@@ -13,8 +13,8 @@ export interface Product {
     categoryId: string | null;
     variants: Variant[];
     color: string,
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface CreateProductDto {

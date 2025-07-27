@@ -33,11 +33,9 @@ const LoginPage = () => {
         setIsLoading(true);
         setLoginError('');
 
-        console.log('1. Tentando fazer login com os dados:', data);
 
         try {
             await login(data);
-            console.log('2. Login bem-sucedido no cliente. Tentando navegar.');
             navigate('/'); 
         } catch (error) {
             setLoginError('Credenciais inválidas. Tente novamente.');

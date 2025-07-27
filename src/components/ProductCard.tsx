@@ -10,25 +10,17 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
 
-    const allVariants = [
-        {
-            id: product.id,
-            color: product.color || '#CCCCCC',
-            imageUrls: product.mainImageUrl,
-        } as Variant,
-        ...product.variants
-    ];
-
-    const uniqueVariants = allVariants.filter((variant: Variant, index: number, self: Variant[]) =>
+   
+    const uniqueVariants = product.variants.filter((variant: Variant, index: number, self: Variant[]) =>
         index === self.findIndex((v) => v.color === variant.color)
     );
 
-    const [mainImage, setMainImage] = useState(product.mainImageUrl?.[0] || '');
+    const [mainImage, setMainImage] = useState(uniqueVariants?.[0]?.imageUrls?.[0] || '');
     const [selectedVariantId, setSelectedVariantId] = useState<string | null>(uniqueVariants?.[0]?.id || null);
 
     const handleVariantClick = (variant: Variant) => {
         setSelectedVariantId(variant.id);
-        const selectedImage = variant.imageUrls?.[0] || product.mainImageUrl?.[0] || '';
+        const selectedImage = variant.imageUrls?.[0] || '';
         setMainImage(selectedImage);
     };
 
@@ -42,22 +34,22 @@ const ProductCard = ({ product }: ProductCardProps) => {
     const handleImageLeave = () => {
         const selectedVariant = uniqueVariants.find((v: Variant) => v.id === selectedVariantId);
         if (selectedVariant) {
-            setMainImage(selectedVariant.imageUrls?.[0] || product.mainImageUrl?.[0] || '');
+            setMainImage(selectedVariant.imageUrls?.[0] || '');
         } else {
-            setMainImage(product.mainImageUrl?.[0] || '');
+            setMainImage(uniqueVariants?.[0]?.imageUrls?.[0] || '');
         }
     };
 
     const handleVariantHover = (variant: Variant) => {
-        setMainImage(variant.imageUrls?.[0] || variant.imageUrls?.[0] || product.mainImageUrl?.[0] || '');
+        setMainImage(variant.imageUrls?.[0] || '');
     };
 
     const handleVariantLeave = () => {
         const selectedVariant = uniqueVariants.find(v => v.id === selectedVariantId);
         if (selectedVariant) {
-            setMainImage(selectedVariant.imageUrls?.[0] || product.mainImageUrl?.[0] || '');
+            setMainImage(selectedVariant.imageUrls?.[0] || '');
         } else {
-            setMainImage(product.mainImageUrl?.[0] || '');
+            setMainImage(uniqueVariants?.[0]?.imageUrls?.[0] || '');
         }
     };
 
@@ -72,7 +64,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     onMouseLeave={handleImageLeave}
                 >
                     <img
-                        src={mainImage}
+                        src={mainImage || '/placeholder-image.png'} 
                         alt={product.name}
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -88,7 +80,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     {uniqueVariants.slice(0, 3).map((variant) => (
                         <ColorVariantDot
                             key={variant.id}
-                            color={variant.color}
+                            color={variant.color} 
                             isSelected={selectedVariantId === variant.id}
                             onClick={() => handleVariantClick(variant)}
                             onMouseEnter={() => handleVariantHover(variant)}

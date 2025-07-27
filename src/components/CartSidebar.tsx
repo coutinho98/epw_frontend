@@ -49,30 +49,12 @@ const CartSidebar: React.FC<CartSidebarProps> = () => {
                                     <p className="font-bold text-md">R$ {(item.price * item.quantity).toFixed(2)}</p>
                                     <div className="flex items-center mt-2">
                                         <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleQuantityChange(item.variantId, item.quantity, -1)}
-                                            className="px-2 py-1 h-8 text-white bg-zinc-900 hover:bg-zinc-800 border-gray-700"
-                                            disabled={item.quantity <= 1}
-                                        >
-                                            <MinusIcon className="h-4 w-4" />
-                                        </Button>
-                                        <span className="mx-2 text-lg">{item.quantity}</span>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleQuantityChange(item.variantId, item.quantity, 1)}
-                                            className="px-2 py-1 h-8 text-white bg-zinc-900 hover:bg-zinc-800 border-gray-700"
-                                        >
-                                            <PlusIcon className="h-4 w-4" />
-                                        </Button>
-                                        <Button
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => removeItem(item.variantId)}
-                                            className="ml-auto text-red-500 hover:text-red-400"
+                                            className="ml-auto text-white hover:text-red-400"
                                         >
-                                            <XIcon className="h-10 w-10" />
+                                            <XIcon className="h-15 w-15" />
                                         </Button>
                                     </div>
                                 </div>

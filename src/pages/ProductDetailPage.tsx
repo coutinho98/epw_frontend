@@ -20,7 +20,30 @@ const ProductDetailPage: React.FC = () => {
 
     const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
 
-    const allPossibleSizes = ['PP', 'P', 'M', 'G',];
+    const allPossibleSizes = ['PP', 'P', 'M', 'G'];
+
+    const getAvailableSizesForColor = (product: Product & { variants: Variant[] }, selectedColor?: string): string[] => {
+        const sizes: string[] = [];
+
+        if (!selectedColor && product.size && product.size.trim() !== '') {
+            sizes.push(product.size);
+        }
+
+        if (selectedColor && product.color === selectedColor && product.size && product.size.trim() !== '') {
+            sizes.push(product.size);
+        }
+
+        if (product.variants && product.variants.length > 0 && selectedColor) {
+            const variantSizes = product.variants
+                .filter(v => v.color === selectedColor)
+                .map(v => v.size)
+                .filter(size => size && size.trim() !== '');
+            
+            sizes.push(...variantSizes);
+        }
+
+        return [...new Set(sizes)].sort();
+    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -33,8 +56,6 @@ const ProductDetailPage: React.FC = () => {
             setError(null);
             try {
                 const fetchedProduct = await api.get<Product & { variants: Variant[] }>(`/products/${slug}`);
-                console.log('Produto buscado da API:', fetchedProduct);
-
                 if (fetchedProduct) {
                     setProduct(fetchedProduct);
 
@@ -45,35 +66,49 @@ const ProductDetailPage: React.FC = () => {
                                 uniqueColors.set(variant.color, variant);
                             }
                         });
-                    } else if (fetchedProduct.color) {
-                        uniqueColors.set(fetchedProduct.color, {
-                            id: fetchedProduct.id,
-                            color: fetchedProduct.color,
-                            imageUrls: fetchedProduct.mainImageUrl,
-                            size: '',
-                            productId: fetchedProduct.id, sku: '', stock: 0, additionalPrice: 0, createdAt: '', updatedAt: ''
-                        });
+                    }
+
+                    if (fetchedProduct.color) {
+                        if (!uniqueColors.has(fetchedProduct.color)) {
+                            uniqueColors.set(fetchedProduct.color, {
+                                id: fetchedProduct.id,
+                                color: fetchedProduct.color,
+                                imageUrls: fetchedProduct.mainImageUrl,
+                                size: fetchedProduct.size || '',
+                                productId: fetchedProduct.id, 
+                                sku: '', 
+                                stock: 0, 
+                                additionalPrice: 0, 
+                                createdAt: '', 
+                                updatedAt: ''
+                            });
+                        }
                     }
 
                     const firstUniqueColorVariant = uniqueColors.values().next().value;
                     if (firstUniqueColorVariant) {
                         setSelectedColorVariant(firstUniqueColorVariant.color);
-                        const sizesForFirstColor = Array.from(new Set(
-                            fetchedProduct.variants
-                                .filter(v => v.color === firstUniqueColorVariant.color)
-                                .map(v => v.size)
-                        )).sort();
+                        
+                        const sizesForColor = getAvailableSizesForColor(fetchedProduct, firstUniqueColorVariant.color);
+                        setAvailableSizesForColor(sizesForColor);
 
-                        setAvailableSizesForColor(sizesForFirstColor);
+                        if (sizesForColor.length > 0) {
+                            setSelectedSize(sizesForColor[0]);
+                        } else {
+                            setSelectedSize(null);
+                        }
 
                         const imagesForInitialColor: string[] = [];
-                        fetchedProduct.variants
-                            .filter(v => v.color === firstUniqueColorVariant.color)
-                            .forEach(v => {
-                                if (v.imageUrls && v.imageUrls.length > 0) {
-                                    imagesForInitialColor.push(...v.imageUrls);
-                                }
-                            });
+                        
+                        if (fetchedProduct.variants) {
+                            fetchedProduct.variants
+                                .filter(v => v.color === firstUniqueColorVariant.color)
+                                .forEach(v => {
+                                    if (v.imageUrls && v.imageUrls.length > 0) {
+                                        imagesForInitialColor.push(...v.imageUrls);
+                                    }
+                                });
+                        }
 
                         const uniqueInitialImages = Array.from(new Set(imagesForInitialColor));
 
@@ -84,16 +119,17 @@ const ProductDetailPage: React.FC = () => {
                         } else {
                             setImagesToDisplay([]);
                         }
-
-                        if (sizesForFirstColor.length > 0) {
-                            setSelectedSize(sizesForFirstColor[0]);
-                        } else {
-                            setSelectedSize(null); 
-                        }
                     } else {
+                        setSelectedColorVariant(fetchedProduct.color || null);
                         setImagesToDisplay((fetchedProduct.mainImageUrl && fetchedProduct.mainImageUrl) || []);
-                        setAvailableSizesForColor([]);
-                        setSelectedSize(null);
+                        
+                        if (fetchedProduct.size && fetchedProduct.size.trim() !== '') {
+                            setAvailableSizesForColor([fetchedProduct.size]);
+                            setSelectedSize(fetchedProduct.size);
+                        } else {
+                            setAvailableSizesForColor([]);
+                            setSelectedSize(null);
+                        }
                     }
                 } else {
                     setError('Produto não encontrado.');
@@ -113,11 +149,18 @@ const ProductDetailPage: React.FC = () => {
 
     useEffect(() => {
         if (product && selectedColorVariant) {
-            const variantsOfSelectedColor = product.variants.filter(v => v.color === selectedColorVariant);
-            const sizes = [...new Set(variantsOfSelectedColor.map(v => v.size))].sort();
+            const sizes = getAvailableSizesForColor(product, selectedColorVariant);
             setAvailableSizesForColor(sizes);
 
             const imagesForSelectedColor: string[] = [];
+            
+            if (product.color === selectedColorVariant) {
+                if (product.mainImageUrl && product.mainImageUrl.length > 0) {
+                    imagesForSelectedColor.push(...product.mainImageUrl);
+                }
+            }
+            
+            const variantsOfSelectedColor = product.variants.filter(v => v.color === selectedColorVariant);
             variantsOfSelectedColor.forEach(v => {
                 if (v.imageUrls && v.imageUrls.length > 0) {
                     imagesForSelectedColor.push(...v.imageUrls);
@@ -137,6 +180,16 @@ const ProductDetailPage: React.FC = () => {
             if (sizes.length > 0 && (!selectedSize || !sizes.includes(selectedSize))) {
                 setSelectedSize(sizes[0]);
             } else if (sizes.length === 0) {
+                setSelectedSize(null);
+            }
+        } else if (product && !selectedColorVariant) {
+            if (product.size && product.size.trim() !== '') {
+                setAvailableSizesForColor([product.size]);
+                if (!selectedSize || selectedSize !== product.size) {
+                    setSelectedSize(product.size);
+                }
+            } else {
+                setAvailableSizesForColor([]);
                 setSelectedSize(null);
             }
         }
@@ -183,7 +236,7 @@ const ProductDetailPage: React.FC = () => {
                     <h1 className="text-3xl lg:text-4xl mb-4">{product.name}</h1>
                     <p className="text-sm lg:text-sm mb-3 text-white">R$ {product.price.toFixed(2)}</p>
 
-                    {product.variants && product.variants.length > 0 && (
+                    {availableSizesForColor.length > 0 && (
                         <ProductVariantSelector
                             uniqueColorsForDisplay={uniqueColorsForDisplay}
                             selectedColorVariant={selectedColorVariant}
