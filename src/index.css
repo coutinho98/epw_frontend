@@ -1,7 +1,7 @@
 /* src/index.css */
 
 @layer theme, base, components, utilities;
-@import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
+/* Removido o import do Google Fonts daqui, pois já está no index.html */
 @import "./theme.css" layer(theme);
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -9,7 +9,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-jersey: "Jersey 10", sans-serif
+  --font-jersey: "Jersey 10", sans-serif;
+  /* Mantido se for usado em algum lugar */
+  --font-heading: "Bebas Neue", sans-serif;
+  /* Nova variável para Bebas Neue */
+  --font-body: "Poppins", sans-serif;
+  /* Nova variável para Poppins (já existente) */
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -58,7 +63,8 @@ input[type="number"] {
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);}
+  --color-sidebar-ring: var(--sidebar-ring);
+}
 
 :root {
   --radius: 0.625rem;
@@ -92,7 +98,8 @@ input[type="number"] {
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);}
+  --sidebar-ring: oklch(0.708 0 0);
+}
 
 .dark {
   --background: oklch(0.145 0 0);
@@ -125,15 +132,28 @@ input[type="number"] {
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);}
+  --sidebar-ring: oklch(0.556 0 0);
+}
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;}
+    @apply border-border outline-ring/50;
+  }
+
   body {
     @apply bg-black;
-    font-family: 'Poppins', sans-serif;
-  }}
+    font-family: var(--font-body), sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading), sans-serif;
+  }
+}
 
 @layer utilities {
   .disabled-vertical-line {
@@ -158,6 +178,7 @@ input[type="number"] {
     .cart-table-desktop {
       display: table;
     }
+
     .cart-list-mobile {
       display: none;
     }
@@ -167,10 +188,12 @@ input[type="number"] {
     .cart-table-desktop {
       display: none;
     }
+
     .cart-list-mobile {
       display: grid;
       gap: 1rem;
     }
+
     .cart-item-mobile {
       display: flex;
       flex-direction: column;
@@ -178,30 +201,36 @@ input[type="number"] {
       padding-bottom: 1rem;
       margin-bottom: 1rem;
     }
+
     .cart-item-mobile:last-child {
       border-bottom: none;
       margin-bottom: 0;
       padding-bottom: 0;
     }
+
     .mobile-item-header {
       display: flex;
       align-items: center;
       gap: 1rem;
       margin-bottom: 0.5rem;
     }
+
     .mobile-item-details {
       margin-bottom: 0.5rem;
     }
+
     .mobile-item-quantity {
       display: flex;
       align-items: center;
       gap: 1rem;
       margin-bottom: 0.5rem;
     }
+
     .mobile-item-actions {
       display: flex;
       justify-content: flex-end;
     }
+
     .mobile-item-subtotal {
       font-weight: bold;
     }

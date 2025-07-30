@@ -22,7 +22,6 @@ export interface CreateProductDto {
     description?: string;
     slug: string;
     price: number;
-    mainImageUrl: string;
     isFeatured?: boolean;
     isAvailable?: boolean;
     categoryId?: string;

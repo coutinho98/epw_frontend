@@ -17,7 +17,7 @@ const ProductSection = ({ title, products }: ProductSectionProps) => {
                 </div>
                 <Link to="/products" className="absolute top-0 right-4 lg:right-18 z-10 hidden md:block"> 
                     <Button
-                        className="text-sm bg-white text-black hover:bg-gray-300 aspect-square flex items-center justify-center cursor-pointer"
+                        className="w-60 h-12 text-sm bg-white text-black hover:bg-gray-300 aspect-square flex items-center justify-center cursor-pointer"
                     >
                         TODOS OS PRODUTOS
                     </Button>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { Button } from './ui/button';
@@ -20,12 +20,36 @@ const Layout: React.FC = () => {
     const { toggleCart, cartItemCount } = useCart();
     const { isAuthenticated, user, logout } = useAuth();
 
+    const messages = [
+        "10% DE DESCONTO NO PIX!",
+        "FRETE GRÁTIS EM COMPRAS ACIMA DE R$199!",
+        "NOVIDADES TODO MÊS, FIQUE LIGADO!"
+    ];
+    const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [messages.length]);
+
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
     return (
         <div className="min-h-screen bg-black text-white flex flex-col">
+            <div className="w-full bg-white text-black py-2 text-center text-sm font-semibold tracking-wide overflow-hidden">
+                <span 
+                    key={currentMessageIndex} 
+                    className="block animate-fade-in-out" 
+                >
+                    {messages[currentMessageIndex]}
+                </span>
+            </div>
+
             <div className="max-w-screen-2xl mx-auto px-4 md:px-8 w-full">
                 <nav className="sticky top-0 z-50 h-20 flex items-center">
                     <div className="flex items-center justify-between w-full">

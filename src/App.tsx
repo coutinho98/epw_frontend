@@ -33,8 +33,6 @@ const App = () => {
             <Route element={<ProtectedRoute />}>
               <Route path="orders-history" element={<OrderHistoryPage />} />
             </Route>
-
-
             <Route element={<AdminProtectedRoute />}>
               <Route path="admin" element={<AdminLayout />}>
                 <Route path="products" element={<AdminProductListPage />} />

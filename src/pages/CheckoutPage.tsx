@@ -1,6 +1,4 @@
-// src/pages/CheckoutPage.tsx
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -10,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-// Definição das interfaces
 interface ShippingAddress {
   street: string;
   city: string;
@@ -30,11 +27,31 @@ interface OrderData {
   paymentMethod: string;
 }
 
-// Interface para a resposta da API, com o campo 'id'
-interface OrderResponse {
-  id: string;
-  // Outras propriedades que a API de orders retorna podem ser adicionadas aqui
+interface BackendOrderResponse {
+  order: {
+    id: string;
+    userId: string;
+    status: string;
+    totalPrice: string;
+    shippingAddress: any;
+    paymentMethod: string | null;
+    paymentStatus: string;
+    createdAt: string;
+    updatedAt: string;
+    items: Array<any>;
+    user: {
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
+  };
+  payment: {
+    init_point: string;
+    preference_id: string;
+  };
 }
+
 
 const CheckoutPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -78,27 +95,29 @@ const CheckoutPage = () => {
     };
 
     try {
-      const response = await api.post('/orders', orderData);
+      const apiResponse = await api.post<BackendOrderResponse>('/orders', orderData);
+      const { order, payment } = apiResponse;
 
-      // Usamos a asserção de tipo e a navegação segura
-      const order = response as OrderResponse;
-      if (order?.id) {
-        toast.success('Pedido criado com sucesso!');
+      if (payment && payment.init_point) {
+        toast.success('Pedido criado com sucesso! Abrindo página de pagamento...');
         clearCart();
-        navigate('/orders-history');
+
+        window.open(payment.init_point, '_blank');
+
       } else {
-        throw new Error('Falha ao criar o pedido.');
+        throw new Error('Falha ao obter URL de pagamento do Mercado Pago na resposta.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao criar o pedido:', error);
-      toast.error('Erro ao criar o pedido. Tente novamente.');
+      const errorMessage = error.message || 'Tente novamente.';
+      toast.error(`Erro ao criar o pedido. ${errorMessage}`);
     }
   };
 
   return (
     <div className="container mx-auto p-8 max-w-2xl">
       <h1 className="text-3xl font-bold mb-8">Finalizar Pedido</h1>
-      
+
       <form onSubmit={handleCreateOrder}>
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Endereço de Entrega</h2>
