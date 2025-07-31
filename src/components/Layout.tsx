@@ -15,6 +15,7 @@ import {
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
+import backgroundImage from '../assets/image/background.png';
 const Layout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { toggleCart, cartItemCount } = useCart();
@@ -22,7 +23,7 @@ const Layout: React.FC = () => {
 
     const messages = [
         "10% DE DESCONTO NO PIX!",
-        "FRETE GRÁTIS EM COMPRAS ACIMA DE R$199!",
+        "FRETE GRÁTIS EM COMPRAS ACIMA DE R$200!",
         "NOVIDADES TODO MÊS, FIQUE LIGADO!"
     ];
     const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
@@ -40,8 +41,17 @@ const Layout: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white flex flex-col">
-            <div className="w-full bg-white text-black py-2 text-center text-sm font-semibold tracking-wide overflow-hidden">
+        <div 
+            className="min-h-screen bg-black text-white flex flex-col"
+            style={{ 
+                backgroundImage: `url(${backgroundImage})`, 
+                backgroundSize: 'cover', 
+                backgroundAttachment: 'fixed',
+                backgroundPosition: 'center', 
+                backgroundRepeat: 'no-repeat', 
+            }}
+        >
+            <div className="w-full bg-white text-black py-4 text-center text-1xl font-semibold tracking-wide overflow-hidden">
                 <span 
                     key={currentMessageIndex} 
                     className="block animate-fade-in-out" 
@@ -61,7 +71,7 @@ const Layout: React.FC = () => {
                             </Button>
                         </div>
                         <div className="flex-1 text-center md:text-left mt-4">
-                            <h1 className="text-lg md:text-2xl font-bold">@empowerfitness | fitness clothing</h1>
+                            <h1 className="text-lg md:text-2xl font-bold tracking-wide">@empowerfitness | fitness clothing</h1>
                         </div>
 
                         <div className="flex items-center space-x-4">

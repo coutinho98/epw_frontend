@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
+import backgroundImage from '../assets/image/background.png';
+
 const loginFormSchema = z.object({
     email: z.string().email({ message: 'E-mail inválido.' }),
     password: z.string().min(8, { message: 'A senha deve ter no mínimo 8 caracteres.' }),
@@ -46,23 +48,33 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="bg-gradient-to-br from-slate-custom-650 to-gray-900 min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden">
-            <div className="w-full max-w-md mx-auto relative z-10">
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center mb-5">
-                        <img
-                            src={logo}
-                            alt="EMPOWER FIT Logo"
-                            className="w-20 h-20 object-contain"
-                        />
-                    </div>
-                    <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-300 mb-2">
-                        EMPOWER FIT
-                    </h1>
-                    <p className="text-gray-400 text-lg">Acesse sua conta</p>
-                </div>
+        <div
+            className="min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden"
+            style={{
+                backgroundColor: '#EEE5DE',
+                backgroundImage: `url(${backgroundImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundAttachment: 'fixed',
+            }}
+        >
 
+            <div className="w-full max-w-md mx-auto relative z-10">
                 <div className="bg-gray-900/80 backdrop-blur-lg border border-gray-700/50 rounded-3xl p-8 shadow-2xl">
+                    <div className="text-center mb-10">
+                        <div className="inline-flex items-center justify-center mb-5">
+                            <img
+                                src={logo}
+                                alt="EMPOWER FIT Logo"
+                                className="w-20 h-20 object-contain"
+                            />
+                        </div>
+                        <h1 className="text-4xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-300 ">
+                            EMPOWER FIT
+                        </h1>
+                    </div>
+
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         {loginError && (
                             <div className="bg-red-900/20 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-sm text-center backdrop-blur-sm">

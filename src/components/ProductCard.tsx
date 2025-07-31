@@ -72,8 +72,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 </div>
             </Link>
             <div className="mt-2 text-center">
-                <h3 className="text-white line-clamp-1">{product.name}</h3>
-                <p className="text-white font-bold">R${product.price.toFixed(2)}</p>
+                <h3 className="text-white line-clamp-3 tracking-widest">{product.name}</h3>
+                <h5 className="text-white tracking-widest">R${product.price.toFixed(2)}</h5>
             </div>
             {uniqueVariants.length > 0 && (
                 <div className="flex items-center space-x-2 mt-4 mb-30">

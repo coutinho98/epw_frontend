@@ -25,7 +25,7 @@ const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
         <>
             {uniqueColorsForDisplay.length > 0 && (
                 <div className="mb-8">
-                    <h3 className="text-sm mb-3">Selecione a cor: <span className="font-bold">{selectedColorVariant}</span></h3>
+                    <h3 className="text-base tracking-widest mb-3">Selecione a cor: <span className="font-bold">{selectedColorVariant}</span></h3>
                     <div className="flex flex-wrap gap-6">
                         {uniqueColorsForDisplay.map(color => (
                             <ColorVariantDot
@@ -39,7 +39,7 @@ const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
                 </div>
             )}
             <div className="mb-8">
-                <h3 className="text-sm mb-2">Selecione o tamanho <span className='ml-1 underline underline-offset-4 cursor-pointer hover:text-gray-300'>Guia de Tamanho</span></h3>
+                <h3 className="text-base tracking-widest mb-2">Selecione o tamanho <span className='ml-1 underline underline-offset-4 cursor-pointer hover:text-gray-300'>Guia de Tamanho</span></h3>
                 <div className="flex flex-wrap gap-3">
                     {allPossibleSizes.map(size => { 
                         const isAvailable = availableSizesForColor.includes(size); 

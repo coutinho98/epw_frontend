@@ -47,3 +47,5 @@ const App = () => {
 };
 
 export default App;
+
+// FAZER PAGINAÇÃO NO BACK

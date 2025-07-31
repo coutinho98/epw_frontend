@@ -233,8 +233,8 @@ const ProductDetailPage: React.FC = () => {
                     <ProductImageGallery images={imagesToDisplay} productName={product.name} />
                 </div>
                 <div className="lg:w-1/2 flex flex-col justify-start sticky top-20 h-fit">
-                    <h1 className="text-3xl lg:text-4xl mb-4">{product.name}</h1>
-                    <p className="text-sm lg:text-sm mb-3 text-white">R$ {product.price.toFixed(2)}</p>
+                    <h1 className="text-3xl lg:text-4xl tracking-widest mb-4">{product.name}</h1>
+                    <h3 className="text-base lg:text-base mb-3 tracking-widest text-white">R$ {product.price.toFixed(2)}</h3>
 
                     {availableSizesForColor.length > 0 && (
                         <ProductVariantSelector
