@@ -71,7 +71,7 @@ const Layout: React.FC = () => {
                             </Button>
                         </div>
                         <div className="flex-1 text-center md:text-left mt-4">
-                            <h1 className="text-lg md:text-2xl font-bold tracking-wide">@empowerfitness | fitness clothing</h1>
+                            <h1 className="text-lg md:text-4xl font-bold tracking-widest">@empowerfitness | fitness clothing</h1>
                         </div>
 
                         <div className="flex items-center space-x-4">
