@@ -33,6 +33,7 @@ const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
                                 color={color}
                                 isSelected={selectedColorVariant === color}
                                 onClick={() => onSelectColor(color)}
+                                size="lg"
                             />
                         ))}
                     </div>

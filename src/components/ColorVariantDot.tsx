@@ -23,7 +23,7 @@ const ColorVariantDot = ({
     const sizeClasses = {
         sm: 'w-2 h-2',
         md: 'w-4.5 h-4.5',
-        lg: 'w-6 h-6'
+        lg: 'w-10 h-10'
     };
 
     return (
@@ -32,11 +32,16 @@ const ColorVariantDot = ({
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             className={`${sizeClasses[size]} rounded-full cursor-pointer transition-all duration-200
-                ${isSelected ? 'ring-2 ring-white' : ''}`}
-            style={{ backgroundColor: colorValue }}
+                ${isSelected ? 'ring-3 ring-white ' : ''}`}
             title={color}>
+            <div
+                className="w-full h-full rounded-full transition-transform duration-200"
+                style={{
+                    backgroundColor: colorValue,
+                    transform: isSelected ? 'scale(0.6)' : 'scale(1)' 
+                }}
+            />
         </div>
-
     );
 };
 
