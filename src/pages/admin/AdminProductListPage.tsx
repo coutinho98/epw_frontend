@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '@/services/api';
 import { Product } from '@/types/Product';
 import { Variant } from '@/types/Variant';
@@ -29,7 +29,6 @@ import {
 import { ArrowUpDown } from 'lucide-react';
 import AdminProductForm from './AdminProductForm';
 import AdminVariationManager from './AdminVariationManager';
-import { SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 
 interface ProductWithVariants extends Product {
     variants: Variant[];
@@ -229,7 +228,6 @@ const AdminProductListPage: React.FC = () => {
                 />
             </div>
 
-            {/* Componente de formulário para adicionar/editar produtos */}
             <AdminProductForm
                 isOpen={isProductFormOpen}
                 onClose={() => setIsProductFormOpen(false)}
@@ -269,7 +267,6 @@ const AdminProductListPage: React.FC = () => {
                 </Table>
             </div>
 
-            {/* Componente para gerenciar as variações */}
             <AdminVariationManager
                 isOpen={isVariationSheetOpen}
                 onClose={() => setIsVariationSheetOpen(false)}

@@ -81,39 +81,28 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
 
     const onSubmit = async (values: FormValues) => {
         try {
-            const formData = new FormData();
-            
-            formData.append('name', values.name || '');
-            formData.append('description', values.description || '');
-            
-            if (values.details) {
-                const detailsArray = values.details.split('\n').map(item => item.trim()).filter(item => item !== '');
-                detailsArray.forEach(detail => {
-                    formData.append('details[]', detail);
-                });
-            }
+            const productData = {
+                name: values.name,
+                description: values.description || undefined,
+                details: values.details ? values.details.split('\n').map(item => item.trim()).filter(item => item !== '') : undefined,
+                slug: values.slug,
+                price: values.price,
+                isFeatured: values.isFeatured,
+                isAvailable: values.isAvailable,
+            };
 
-            formData.append('slug', values.slug || '');
-            formData.append('price', values.price.toString());
-            formData.append('isFeatured', values.isFeatured.toString());
-            formData.append('isAvailable', values.isAvailable.toString());
-
-            if (values.images && values.images.length > 0) {
-                values.images.forEach((file: File) => {
-                    formData.append('images', file);
-                });
-            }
-
+            let response;
             if (productToEdit) {
-                await api.patch(`/products/${productToEdit.id}`, formData);
+                response = await api.patch(`/products/${productToEdit.id}`, productData);
                 toast.success('Produto atualizado com sucesso!');
             } else {
-                await api.post('/products', formData);
+                response = await api.post('/products', productData);
                 toast.success('Produto adicionado com sucesso!');
             }
             onSuccess();
             onClose();
         } catch (err: any) {
+            console.error('Erro ao salvar o produto:', err);
             toast.error('Falha ao salvar produto.', { description: err.message || 'Erro desconhecido.' });
         }
     };

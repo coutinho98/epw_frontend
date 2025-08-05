@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import api from '@/services/api';
 import { Variant } from '@/types/Variant';
 import { Product } from '@/types/Product';
@@ -19,7 +19,10 @@ interface AdminVariationManagerProps {
 
 const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, onClose, product, onSuccess }) => {
     const [variants, setVariants] = useState<Variant[]>([]);
-    const [newVariant, setNewVariant] = useState({ size: '', color: '', stock: 0, additionalPrice: 0, imageUrls: '' });
+    const [newVariant, setNewVariant] = useState({ size: '', color: '', stock: 0, additionalPrice: 0, sku: '', images: [] as File[] });
+    const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
+    const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
+    const [editingVariantId, setEditingVariantId] = useState<string | null>(null);
 
     useEffect(() => {
         if (product) {
@@ -29,7 +32,36 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
         }
     }, [product]);
 
-    const handleAddVariant = async (e: React.FormEvent) => {
+    const handleImageFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files);
+            setNewVariant(prev => ({ ...prev, images: files }));
+            setImagePreviewUrls(files.map(file => URL.createObjectURL(file)));
+        }
+    };
+
+    const handleEditVariantClick = (variant: Variant) => {
+        setEditingVariantId(variant.id);
+        setNewVariant({
+            size: variant.size,
+            color: variant.color,
+            stock: variant.stock,
+            additionalPrice: variant.additionalPrice,
+            sku: variant.sku,
+            images: []
+        });
+        setExistingImageUrls(variant.imageUrls || []);
+        setImagePreviewUrls([]); 
+    };
+
+    const handleClearForm = () => {
+        setEditingVariantId(null);
+        setNewVariant({ size: '', color: '', stock: 0, additionalPrice: 0, sku: '', images: [] });
+        setExistingImageUrls([]);
+        setImagePreviewUrls([]);
+    };
+
+    const handleAddOrUpdateVariant = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!product) {
             toast.error('Nenhum produto selecionado.');
@@ -37,18 +69,35 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
         }
 
         try {
-            const imageUrlsArray = newVariant.imageUrls.split(',').map(url => url.trim()).filter(url => url);
-            const variantData = {
-                ...newVariant,
-                imageUrls: imageUrlsArray,
-                productId: product.id
-            };
-            await api.post(`/variants`, variantData);
-            toast.success('Variação adicionada com sucesso!');
+            const formData = new FormData();
+            formData.append('size', newVariant.size);
+            formData.append('color', newVariant.color);
+            formData.append('stock', newVariant.stock.toString());
+            formData.append('additionalPrice', newVariant.additionalPrice.toString());
+            formData.append('productId', product.id);
+            formData.append('sku', newVariant.sku);
+            
+            existingImageUrls.forEach(url => {
+                formData.append('imageUrls', url);
+            });
+
+            newVariant.images.forEach(file => {
+                formData.append('images', file);
+            });
+
+            if (editingVariantId) {
+                await api.patch(`/variants/${editingVariantId}`, formData);
+                toast.success('Variação atualizada com sucesso!');
+            } else {
+                await api.post(`/variants`, formData);
+                toast.success('Variação adicionada com sucesso!');
+            }
+            
             onSuccess();
-            setNewVariant({ size: '', color: '', stock: 0, additionalPrice: 0, imageUrls: '' });
+            handleClearForm();
         } catch (err: any) {
-            toast.error('Falha ao adicionar variação.', { description: err.message || 'Erro desconhecido.' });
+            console.error('Falha ao salvar variação:', err);
+            toast.error('Falha ao salvar variação.', { description: err.message || 'Erro desconhecido.' });
         }
     };
 
@@ -80,6 +129,7 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                                     <TableRow className="border-gray-700">
                                         <TableHead className="text-white">Cor</TableHead>
                                         <TableHead className="text-white">Tamanho</TableHead>
+                                        <TableHead className="text-white">SKU</TableHead>
                                         <TableHead className="text-white">Estoque</TableHead>
                                         <TableHead className="text-white">Preço Adicional</TableHead>
                                         <TableHead className="text-white text-right">Ações</TableHead>
@@ -90,9 +140,13 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                                         <TableRow key={variant.id} className="border-gray-800 hover:bg-zinc-700">
                                             <TableCell>{variant.color}</TableCell>
                                             <TableCell>{variant.size}</TableCell>
+                                            <TableCell>{variant.sku}</TableCell>
                                             <TableCell>{variant.stock}</TableCell>
                                             <TableCell>R$ {variant.additionalPrice.toFixed(2)}</TableCell>
-                                            <TableCell className="text-right">
+                                            <TableCell className="text-right flex items-center justify-end space-x-2">
+                                                <Button variant="outline" size="sm" onClick={() => handleEditVariantClick(variant)} className="text-white border-white hover:bg-white hover:text-black">
+                                                    Editar
+                                                </Button>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
                                                         <Button variant="destructive" size="sm">Remover</Button>
@@ -123,8 +177,10 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                     )}
                     
                     <div className="mt-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">Adicionar Nova Variação</h3>
-                        <form onSubmit={handleAddVariant} className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white mb-4">
+                            {editingVariantId ? 'Editar Variação' : 'Adicionar Nova Variação'}
+                        </h3>
+                        <form onSubmit={handleAddOrUpdateVariant} className="space-y-4">
                             <div>
                                 <Label htmlFor="size" className="text-white">Tamanho</Label>
                                 <Input id="size" value={newVariant.size} onChange={e => setNewVariant({...newVariant, size: e.target.value})} className="text-white bg-zinc-900 border-gray-700" required />
@@ -132,6 +188,10 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                             <div>
                                 <Label htmlFor="color" className="text-white">Cor</Label>
                                 <Input id="color" value={newVariant.color} onChange={e => setNewVariant({...newVariant, color: e.target.value})} className="text-white bg-zinc-900 border-gray-700" required />
+                            </div>
+                            <div>
+                                <Label htmlFor="sku" className="text-white">SKU</Label>
+                                <Input id="sku" value={newVariant.sku} onChange={e => setNewVariant({...newVariant, sku: e.target.value})} className="text-white bg-zinc-900 border-gray-700" required />
                             </div>
                             <div>
                                 <Label htmlFor="stock" className="text-white">Estoque</Label>
@@ -142,12 +202,37 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                                 <Input id="additionalPrice" type="number" value={newVariant.additionalPrice} onChange={e => setNewVariant({...newVariant, additionalPrice: parseFloat(e.target.value) || 0})} step="0.01" className="text-white bg-zinc-900 border-gray-700" required />
                             </div>
                             <div>
-                                <Label htmlFor="imageUrls" className="text-white">URLs das Imagens (separadas por vírgula)</Label>
-                                <Input id="imageUrls" value={newVariant.imageUrls} onChange={e => setNewVariant({...newVariant, imageUrls: e.target.value})} className="text-white bg-zinc-900 border-gray-700" />
+                                <Label htmlFor="images" className="text-white">Imagens (arquivos)</Label>
+                                <Input
+                                    id="images"
+                                    type="file"
+                                    multiple
+                                    onChange={handleImageFileChange}
+                                    className="text-white bg-zinc-900 border-gray-700 file:text-white file:bg-gray-700 hover:file:bg-gray-600"
+                                />
                             </div>
-                            <Button type="submit" className="w-full bg-white text-black hover:bg-gray-300">
-                                Adicionar Variação
-                            </Button>
+                            <div className="mt-2 flex space-x-2 overflow-x-auto">
+                                {existingImageUrls.map((url, index) => (
+                                    <div key={`existing-${index}`} className="w-24 h-24 border rounded-md overflow-hidden flex-shrink-0">
+                                        <img src={url} alt={`Preview ${index + 1}`} className="object-cover w-full h-full" />
+                                    </div>
+                                ))}
+                                {imagePreviewUrls.map((url, index) => (
+                                    <div key={`new-${index}`} className="w-24 h-24 border rounded-md overflow-hidden flex-shrink-0">
+                                        <img src={url} alt={`Nova imagem ${index + 1}`} className="object-cover w-full h-full" />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex gap-2">
+                                {editingVariantId && (
+                                    <Button type="button" onClick={handleClearForm} variant="outline" className="w-full bg-transparent text-white hover:bg-gray-700 border-gray-700">
+                                        Cancelar
+                                    </Button>
+                                )}
+                                <Button type="submit" className="w-full bg-white text-black hover:bg-gray-300">
+                                    {editingVariantId ? 'Salvar Variação' : 'Adicionar Variação'}
+                                </Button>
+                            </div>
                         </form>
                     </div>
                 </div>

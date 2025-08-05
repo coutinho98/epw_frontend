@@ -33,12 +33,15 @@ const processQueue = (error: Error | null, newAccessToken: string | null = null)
 };
 
 async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    const jwtToken = localStorage.getItem('jwt_token'); 
+    const jwtToken = localStorage.getItem('jwt_token');
 
     const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
         ...(options.headers as Record<string, string>),
     };
+
+    if (!(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+    }
 
     if (jwtToken) {
         headers['Authorization'] = `Bearer ${jwtToken}`;
@@ -47,7 +50,7 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
     const config: RequestOptions = {
         ...options,
         headers,
-        credentials: 'include', 
+        credentials: 'include',
     };
 
     try {
@@ -59,15 +62,14 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
                 }) as Promise<T>;
             }
 
-            isRefreshing = true; 
+            isRefreshing = true;
 
             return new Promise<T>(async (resolve, reject) => {
                 try {
-                    // Tentar renovar o token - deu certo :)
                     const refreshResponse = await fetch(`${BASE_URL}/auth/refresh`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include', 
+                        credentials: 'include',
                     });
 
                     if (!refreshResponse.ok) {
@@ -80,13 +82,13 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
 
                     const refreshData = await refreshResponse.json();
                     const newAccessToken = refreshData.accessToken;
-                    localStorage.setItem('jwt_token', newAccessToken); 
+                    localStorage.setItem('jwt_token', newAccessToken);
 
                     const originalHeaders = config.headers as Record<string, string> || {};
                     const newConfigForOriginalRequest: RequestOptions = {
                         ...config,
                         headers: { ...originalHeaders, 'Authorization': `Bearer ${newAccessToken}` },
-                        isRetry: true 
+                        isRetry: true
                     };
                     const originalResponse = await fetch(`${BASE_URL}${endpoint}`, newConfigForOriginalRequest);
 
@@ -97,16 +99,16 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
                     }
 
                     const originalData = await originalResponse.json();
-                    processQueue(null, newAccessToken); 
+                    processQueue(null, newAccessToken);
                     resolve(originalData as T);
 
                 } catch (refreshError: any) {
                     localStorage.removeItem('jwt_token');
                     window.dispatchEvent(new CustomEvent('unauthorized-logout'));
-                    processQueue(refreshError); 
+                    processQueue(refreshError);
                     reject(refreshError);
                 } finally {
-                    isRefreshing = false; 
+                    isRefreshing = false;
                 }
             });
         }
@@ -128,7 +130,7 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
         if (contentType && contentType.includes('application/json')) {
             return response.json() as Promise<T>;
         }
-        return null as T; 
+        return null as T;
     } catch (error) {
         throw error;
     }
@@ -136,8 +138,18 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
 
 const api = {
     get: <T>(endpoint: string, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'GET', ...options }),
-    post: <T>(endpoint: string, data: any, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'POST', body: JSON.stringify(data), ...options }),
-    patch: <T>(endpoint: string, data: any, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'PATCH', body: JSON.stringify(data), ...options }),
+    post: <T>(endpoint: string, data: any, options?: RequestOptions) => {
+        if (data instanceof FormData) {
+            return apiFetch<T>(endpoint, { method: 'POST', body: data, ...options });
+        }
+        return apiFetch<T>(endpoint, { method: 'POST', body: JSON.stringify(data), ...options });
+    },
+    patch: <T>(endpoint: string, data: any, options?: RequestOptions) => {
+        if (data instanceof FormData) {
+            return apiFetch<T>(endpoint, { method: 'PATCH', body: data, ...options });
+        }
+        return apiFetch<T>(endpoint, { method: 'PATCH', body: JSON.stringify(data), ...options });
+    },
     delete: <T>(endpoint: string, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'DELETE', ...options }),
 };
 
