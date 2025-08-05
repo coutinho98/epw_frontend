@@ -8,6 +8,7 @@ export interface Product {
     size: string;
     price: number;
     mainImageUrl: string[];
+    details: string | null; 
     isFeatured: boolean;
     isAvailable: boolean;
     categoryId: string | null;

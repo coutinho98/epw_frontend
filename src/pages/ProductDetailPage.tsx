@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import api from '../services/api';
 import ProductImageGallery from '../components/ProductImageGallery';
 import ProductVariantSelector from '../components/ProductVariantSelector';
@@ -17,6 +18,7 @@ const ProductDetailPage: React.FC = () => {
     const [quantity, setQuantity] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedVariantStock, setSelectedVariantStock] = useState<number | null>(null);
 
     const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
 
@@ -38,7 +40,7 @@ const ProductDetailPage: React.FC = () => {
                 .filter(v => v.color === selectedColor)
                 .map(v => v.size)
                 .filter(size => size && size.trim() !== '');
-            
+
             sizes.push(...variantSizes);
         }
 
@@ -75,11 +77,11 @@ const ProductDetailPage: React.FC = () => {
                                 color: fetchedProduct.color,
                                 imageUrls: fetchedProduct.mainImageUrl,
                                 size: fetchedProduct.size || '',
-                                productId: fetchedProduct.id, 
-                                sku: '', 
-                                stock: 0, 
-                                additionalPrice: 0, 
-                                createdAt: '', 
+                                productId: fetchedProduct.id,
+                                sku: '',
+                                stock: 0,
+                                additionalPrice: 0,
+                                createdAt: '',
                                 updatedAt: ''
                             });
                         }
@@ -88,7 +90,7 @@ const ProductDetailPage: React.FC = () => {
                     const firstUniqueColorVariant = uniqueColors.values().next().value;
                     if (firstUniqueColorVariant) {
                         setSelectedColorVariant(firstUniqueColorVariant.color);
-                        
+
                         const sizesForColor = getAvailableSizesForColor(fetchedProduct, firstUniqueColorVariant.color);
                         setAvailableSizesForColor(sizesForColor);
 
@@ -99,7 +101,7 @@ const ProductDetailPage: React.FC = () => {
                         }
 
                         const imagesForInitialColor: string[] = [];
-                        
+
                         if (fetchedProduct.variants) {
                             fetchedProduct.variants
                                 .filter(v => v.color === firstUniqueColorVariant.color)
@@ -122,7 +124,7 @@ const ProductDetailPage: React.FC = () => {
                     } else {
                         setSelectedColorVariant(fetchedProduct.color || null);
                         setImagesToDisplay((fetchedProduct.mainImageUrl && fetchedProduct.mainImageUrl) || []);
-                        
+
                         if (fetchedProduct.size && fetchedProduct.size.trim() !== '') {
                             setAvailableSizesForColor([fetchedProduct.size]);
                             setSelectedSize(fetchedProduct.size);
@@ -153,13 +155,13 @@ const ProductDetailPage: React.FC = () => {
             setAvailableSizesForColor(sizes);
 
             const imagesForSelectedColor: string[] = [];
-            
+
             if (product.color === selectedColorVariant) {
                 if (product.mainImageUrl && product.mainImageUrl.length > 0) {
                     imagesForSelectedColor.push(...product.mainImageUrl);
                 }
             }
-            
+
             const variantsOfSelectedColor = product.variants.filter(v => v.color === selectedColorVariant);
             variantsOfSelectedColor.forEach(v => {
                 if (v.imageUrls && v.imageUrls.length > 0) {
@@ -194,6 +196,17 @@ const ProductDetailPage: React.FC = () => {
             }
         }
     }, [selectedColorVariant, product, selectedSize]);
+
+    useEffect(() => {
+        if (product && selectedColorVariant && selectedSize) {
+            const currentVariant = product.variants.find(
+                v => v.color === selectedColorVariant && v.size === selectedSize
+            );
+            setSelectedVariantStock(currentVariant?.stock ?? 0);
+        } else {
+            setSelectedVariantStock(null);
+        }
+    }, [selectedColorVariant, selectedSize, product]);
 
     if (loading) {
         return (
@@ -235,19 +248,22 @@ const ProductDetailPage: React.FC = () => {
                 <div className="lg:w-1/2 flex flex-col justify-start sticky top-20 h-fit">
                     <h1 className="text-3xl lg:text-4xl tracking-widest mb-4">{product.name}</h1>
                     <h3 className="text-base lg:text-base mb-3 tracking-widest text-white">R$ {product.price.toFixed(2)}</h3>
-
+                    {selectedVariantStock !== null && (
+                        <h2 className="mb-4 text-1xl tracking-widest text-white">
+                            Estoque: {selectedVariantStock}
+                        </h2>
+                    )}
                     {availableSizesForColor.length > 0 && (
                         <ProductVariantSelector
                             uniqueColorsForDisplay={uniqueColorsForDisplay}
                             selectedColorVariant={selectedColorVariant}
                             onSelectColor={setSelectedColorVariant}
                             availableSizesForColor={availableSizesForColor}
-                            allPossibleSizes={allPossibleSizes} 
+                            allPossibleSizes={allPossibleSizes}
                             selectedSize={selectedSize}
                             onSelectSize={setSelectedSize}
                         />
                     )}
-
                     <div className="flex flex-row items-center gap-4 w-full mt-4">
                         <ProductQuantitySelector
                             quantity={quantity}
@@ -260,6 +276,28 @@ const ProductDetailPage: React.FC = () => {
                             quantity={quantity}
                         />
                     </div>
+                    {product.details && (
+                        <div className="mt-8 text-white">
+                            <Accordion type="single" collapsible>
+                                <AccordionItem value="item-1">
+                                    <AccordionTrigger className='font-mono'>Mais Detalhes</AccordionTrigger>
+                                    <AccordionContent>
+                                        <ul className="list-disc list-inside">
+                                            {Array.isArray(product.details)
+                                                ? product.details.map((detail, index) => (
+                                                    <li key={index}>{detail}</li>
+                                                ))
+                                                : typeof product.details === 'string'
+                                                    ? product.details.split('\n').map((detail, index) => (
+                                                        <li key={index}>{detail}</li>
+                                                    ))
+                                                    : null}
+                                        </ul>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
