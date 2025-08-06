@@ -26,7 +26,7 @@ import {
     SortingState,
     getFilteredRowModel,
 } from "@tanstack/react-table";
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, PlusCircle, Edit, Trash2, FolderEdit } from 'lucide-react';
 import AdminProductForm from './AdminProductForm';
 import AdminVariationManager from './AdminVariationManager';
 
@@ -49,6 +49,7 @@ const AdminProductListPage: React.FC = () => {
         setLoading(true);
         try {
             const productsResponse = await api.get<Product[]>(`/products`);
+
             const productsWithVariants = await Promise.all(
                 productsResponse.map(async (product) => {
                     const variantsResponse = await api.get<Variant[]>(`/variants/product/${product.id}`);
@@ -93,22 +94,6 @@ const AdminProductListPage: React.FC = () => {
 
     const columns: ColumnDef<ProductWithVariants>[] = [
         {
-            accessorKey: "image",
-            header: "Imagem",
-            cell: ({ row }) => {
-                let imageUrl = row.original.mainImageUrl?.[0] || row.original.variants?.[0]?.imageUrls?.[0] || '';
-                return imageUrl ? (
-                    <img src={imageUrl} alt={row.original.name} className="w-12 h-12 object-cover rounded-md" />
-                ) : (
-                    <div className="w-12 h-12 bg-gray-700 flex items-center justify-center text-xs rounded-md text-white">
-                        Sem Imagem
-                    </div>
-                );
-            },
-            enableSorting: false,
-            enableColumnFilter: false,
-        },
-        {
             accessorKey: "name",
             header: ({ column }) => (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="text-white hover:text-gray-300">
@@ -148,17 +133,29 @@ const AdminProductListPage: React.FC = () => {
             cell: ({ row }) => {
                 const product = row.original;
                 return (
-                    <div className="flex flex-col space-y-2 items-end">
-                        <Button variant="outline" size="sm" onClick={() => handleEditProductClick(product)} className="text-white border-white hover:bg-white hover:text-black w-full">
-                            Editar
+                    <div className="flex items-center justify-end space-x-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditProductClick(product)}
+                            className="text-white hover:bg-gray-700"
+                            title="Editar"
+                        >
+                            <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="secondary" size="sm" onClick={() => handleManageVariationsClick(product)} className="text-black bg-gray-300 hover:bg-gray-400 w-full">
-                            Gerenciar Variações
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleManageVariationsClick(product)}
+                            className="text-white hover:bg-gray-700"
+                            title="Gerenciar Variações"
+                        >
+                            <FolderEdit className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm" className="w-full">
-                                    Remover
+                                <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700" title="Remover">
+                                    <Trash2 className="h-4 w-4" />
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent className="text-white bg-zinc-800">
@@ -214,11 +211,11 @@ const AdminProductListPage: React.FC = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 text-white">
+        <div className="p-4 text-white">
             <h1 className="text-3xl font-bold mb-6">Gerenciar Produtos</h1>
             <div className="flex items-center justify-between mb-4">
                 <Button onClick={() => { setEditingProduct(null); setIsProductFormOpen(true); }} className="bg-white text-black hover:bg-gray-300">
-                    Adicionar Novo Produto
+                    <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Novo Produto
                 </Button>
                 <Input
                     placeholder="Buscar produtos..."
@@ -253,7 +250,7 @@ const AdminProductListPage: React.FC = () => {
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="border-gray-800 hover:bg-zinc-700">
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="text-white">
+                                        <TableCell key={cell.id} className="text-white p-2">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -263,7 +260,6 @@ const AdminProductListPage: React.FC = () => {
                             <TableRow><TableCell colSpan={columns.length} className="h-24 text-center text-white">Nenhum resultado encontrado.</TableCell></TableRow>
                         )}
                     </TableBody>
-                    <TableCaption className="text-gray-400 mt-4">Uma lista dos produtos da loja.</TableCaption>
                 </Table>
             </div>
 
