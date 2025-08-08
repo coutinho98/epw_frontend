@@ -10,6 +10,9 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 
+import logo from '../assets/image/Coroa-branco.png'
+import backgroundImage from '../assets/image/background.png';
+
 const step1Schema = z.object({
     firstName: z.string().min(1, { message: 'O primeiro nome é obrigatório.' }),
     lastName: z.string().min(1, { message: 'O último nome é obrigatório.' }),
@@ -84,34 +87,44 @@ const RegisterPage: React.FC = () => {
     };
 
     return (
-        <div className="bg-gradient-to-br from-slate-900 via-gray-900 to-black min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden">
-            
+        <div
+            className="min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden"
+            style={{
+                backgroundColor: '#EEE5DE',
+                backgroundImage: `url(${backgroundImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundAttachment: 'fixed',
+            }}
+        >
             <div className="w-full max-w-md mx-auto relative z-10">
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-300 rounded-2xl mb-6 shadow-lg">
-                        <svg className="w-8 h-8 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"/>
-                        </svg>
-                    </div>
-                    <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-300 mb-2">
-                        EMPOWER FIT
-                    </h1>
-                    <p className="text-gray-400 text-lg">Crie sua conta</p>
-                </div>
-
-                <div className="flex items-center justify-center mb-8">
-                    <div className="flex items-center space-x-4">
-                        <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 1 ? 'bg-gray-200 text-gray-900' : 'bg-gray-700 text-gray-400'} text-sm font-semibold`}>
-                            1
-                        </div>
-                        <div className={`w-12 h-0.5 ${currentStep > 1 ? 'bg-gray-200' : 'bg-gray-700'}`}></div>
-                        <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 2 ? 'bg-gray-200 text-gray-900' : 'bg-gray-700 text-gray-400'} text-sm font-semibold`}>
-                            2
-                        </div>
-                    </div>
-                </div>
-
                 <div className="bg-gray-900/80 backdrop-blur-lg border border-gray-700/50 rounded-3xl p-8 shadow-2xl">
+                    <div className="text-center mb-10">
+                        <div className="inline-flex items-center justify-center mb-5">
+                            <img
+                                src={logo}
+                                alt="EMPOWER FIT Logo"
+                                className="w-20 h-20 object-contain"
+                            />
+                        </div>
+                        <h1 className="text-4xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-300 ">
+                            EMPOWER FIT
+                        </h1>
+                    </div>
+
+                    <div className="flex items-center justify-center mb-8">
+                        <div className="flex items-center space-x-4">
+                            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 1 ? 'bg-gray-200 text-gray-900' : 'bg-gray-700 text-gray-400'} text-sm font-semibold`}>
+                                1
+                            </div>
+                            <div className={`w-12 h-0.5 ${currentStep > 1 ? 'bg-gray-200' : 'bg-gray-700'}`}></div>
+                            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 2 ? 'bg-gray-200 text-gray-900' : 'bg-gray-700 text-gray-400'} text-sm font-semibold`}>
+                                2
+                            </div>
+                        </div>
+                    </div>
+
                     {currentStep === 1 ? (
                         <>
                             <div className="text-center mb-6">
@@ -288,7 +301,7 @@ const RegisterPage: React.FC = () => {
                                     </Button>
                                     <Button
                                         type="submit"
-                                        className="flex-1 h-14 bg-gradient-to-r from-gray-100 to-gray-300 text-gray-900 hover:from-gray-200 hover:to-gray-400 font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                        className="flex-1 h-14 bg-gradient-to-r from-gray-100 to-gray-300 text-gray-900 hover:from-gray-200 hover:to-gray-400 font-semibold text-lg rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                         disabled={isLoading}
                                     >
                                         {isLoading ? (
@@ -307,21 +320,27 @@ const RegisterPage: React.FC = () => {
                             </form>
                         </>
                     )}
-
-                    <div className="text-center mt-8">
+                    <div className="relative my-8">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-600/50"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-4 bg-gray-900/80 text-gray-400">ou</span>
+                        </div>
+                    </div>
+                    <div className="text-center">
                         <p className="text-gray-400 text-sm mb-3">
                             Já tem uma conta?
                         </p>
                         <Link 
-                            to="/login" 
-                            className="inline-flex items-center justify-center text-gray-200 hover:text-white font-medium transition-colors duration-200 hover:underline underline-offset-4"
+                            to="/login"
+                            className="inline-flex items-center justify-center w-full h-12 bg-transparent border border-gray-600/50 text-gray-200 hover:bg-gray-800/50 hover:border-gray-500 font-medium rounded-xl transition-all duration-200 hover:scale-[1.02]"
                         >
                             Fazer login
                         </Link>
                     </div>
                 </div>
 
-                {/* Footer */}
                 <div className="text-center mt-8">
                     <p className="text-gray-500 text-xs">
                         © 2024 EMPOWER FIT. Todos os direitos reservados.
