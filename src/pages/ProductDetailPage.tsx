@@ -280,9 +280,9 @@ const ProductDetailPage: React.FC = () => {
                         <div className="mt-8 text-white">
                             <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className='font-mono'>Mais Detalhes</AccordionTrigger>
+                                    <AccordionTrigger className='font-mono text-lg'>Mais Detalhes</AccordionTrigger>
                                     <AccordionContent>
-                                        <ul className="list-disc list-inside">
+                                        <ul className="list-disc list-inside text-base">
                                             {Array.isArray(product.details)
                                                 ? product.details.map((detail, index) => (
                                                     <li key={index}>{detail}</li>

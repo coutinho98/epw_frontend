@@ -90,7 +90,7 @@ const LoginPage = () => {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="seu@email.com"
+                                    placeholder="email"
                                     className="h-14 bg-gray-800/50 text-white placeholder-gray-500 border border-gray-600/50 rounded-xl focus:border-gray-400 focus:ring-0 transition-all duration-200 pl-4 backdrop-blur-sm"
                                     {...form.register('email')}
                                 />
