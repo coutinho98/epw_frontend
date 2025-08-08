@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -24,7 +24,6 @@ interface OrderData {
     quantity: number;
   }[];
   shippingAddress: ShippingAddress;
-  paymentMethod: string;
 }
 
 interface BackendOrderResponse {
@@ -52,7 +51,6 @@ interface BackendOrderResponse {
   };
 }
 
-
 const CheckoutPage = () => {
   const { user, isAuthenticated } = useAuth();
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -67,7 +65,13 @@ const CheckoutPage = () => {
     complement: '',
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('Credit Card');
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      toast.warning('Você tem itens no seu carrinho que ainda não foram comprados.', {
+        id: 'checkout-warning'
+      });
+    }
+  }, [cartItems]);
 
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,12 +95,11 @@ const CheckoutPage = () => {
         quantity: item.quantity,
       })),
       shippingAddress: shippingAddress,
-      paymentMethod: paymentMethod,
     };
 
     try {
       const apiResponse = await api.post<BackendOrderResponse>('/orders', orderData);
-      const { order, payment } = apiResponse;
+      const { payment } = apiResponse;
 
       if (payment && payment.init_point) {
         toast.success('Pedido criado com sucesso! Abrindo página de pagamento...');
@@ -180,19 +183,10 @@ const CheckoutPage = () => {
         <div className="mt-8">
           <h2 className="text-xl font-semibold">Resumo do Pedido</h2>
           <p className="mt-2">Total: R$ {cartTotal.toFixed(2)}</p>
-          <div className="mt-4">
-            <Label htmlFor="paymentMethod">Método de Pagamento</Label>
-            <Input
-              id="paymentMethod"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              required
-            />
-          </div>
         </div>
 
-        <div className="mt-8 flex justify-end">
-          <Button type="submit">
+        <div className="mt-8 flex">
+          <Button type="submit" className='flex-grow bg-white text-black py-6 text-sm cursor-pointer hover:bg-gray-300'>
             Confirmar e Pagar
           </Button>
         </div>
