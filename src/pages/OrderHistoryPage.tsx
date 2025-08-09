@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Product } from '@/types/Product';
 import { Variant } from '@/types/Variant';
 import { Link } from 'react-router-dom';
+import Layout from '@/components/Layout';
 
 interface OrderItem {
     id: string;
@@ -68,10 +69,10 @@ const OrderHistoryPage = () => {
                 }
                 return;
             }
-            
+
             try {
                 const fetchedOrders = await api.get<Order[]>('/orders');
-                
+
                 if (fetchedOrders && Array.isArray(fetchedOrders)) {
                     const enrichedOrders = await Promise.all(
                         fetchedOrders.map(async (order) => {
@@ -84,7 +85,7 @@ const OrderHistoryPage = () => {
                                     } catch (itemError) {
                                         console.error('Falha ao buscar detalhes da variação:', itemError);
                                     }
-                                    
+
                                     return { ...item, product, variant };
                                 })
                             );
@@ -116,7 +117,6 @@ const OrderHistoryPage = () => {
     return (
         <div className="container mx-auto p-8 text-white">
             <h1 className="text-3xl font-bold mb-8">Seu Histórico de Pedidos</h1>
-
             {orders.length === 0 ? (
                 <p className="text-center text-gray-500 py-8">Nenhum pedido encontrado.</p>
             ) : (
@@ -149,7 +149,7 @@ const OrderHistoryPage = () => {
                                                 <TableCell>
                                                     <div className="flex items-center gap-4">
                                                         {item.product?.mainImageUrl?.[0] && (
-                                                            <img 
+                                                            <img
                                                                 src={item.product.mainImageUrl[0]}
                                                                 alt={item.product.name}
                                                                 className="w-12 h-12 object-cover rounded-md flex-shrink-0"
