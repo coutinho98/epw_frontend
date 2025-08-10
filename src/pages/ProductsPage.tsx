@@ -7,7 +7,6 @@ import { Variant } from '../types/Variant';
 import ProductSection from '../components/ProductSection';
 import { Category } from '../types/Category';
 
-// Combinamos o tipo de Produto com as suas variações
 interface ProductWithVariants extends Product {
     variants: Variant[];
 }
@@ -18,6 +17,18 @@ const ProductsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [categoryName, setCategoryName] = useState('Todos os Produtos');
+
+    const getFirstValidImage = (variants: Variant[]): string | null => {
+        for (const variant of variants) {
+            if (variant.imageUrls && Array.isArray(variant.imageUrls) && variant.imageUrls.length > 0) {
+                const firstImage = variant.imageUrls.find(url => url && url.trim() !== '');
+                if (firstImage) {
+                    return firstImage;
+                }
+            }
+        }
+        return null;
+    };
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -37,17 +48,46 @@ const ProductsPage = () => {
 
                 const productsWithVariants = await Promise.all(
                     productsResponse.map(async (product) => {
-                        const variantsResponse = await api.get<Variant[]>(`/variants/product/${product.id}`);
-                        const variants = Array.isArray(variantsResponse) ? variantsResponse : [];
-                        return {
-                            ...product,
-                            variants: variants,
-                        };
+                        try {
+                            const variantsResponse = await api.get<Variant[]>(`/variants/product/${product.id}`);
+                            const variants = Array.isArray(variantsResponse) ? variantsResponse : [];
+
+                            console.log(`Produto ${product.id} tem ${variants.length} variantes:`, variants);
+
+                            const sortedVariants = variants.sort((a, b) => {
+                                return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+
+                            });
+
+                            const productWithVariants: ProductWithVariants = {
+                                ...product,
+                                variants: sortedVariants,
+                            };
+
+                            if (!product.mainImageUrl || product.mainImageUrl.length === 0) {
+                                const firstValidImage = getFirstValidImage(sortedVariants);
+                                if (firstValidImage) {
+                                    productWithVariants.mainImageUrl = [firstValidImage];
+                                }
+                            }
+
+                            return productWithVariants;
+                        } catch (variantError) {
+                            console.error(`Erro ao buscar variantes do produto ${product.id}:`, variantError);
+                            return {
+                                ...product,
+                                variants: [],
+                            };
+                        }
                     })
                 );
-                
+
                 setCategoryName(categoryNameFromApi);
                 setProducts(productsWithVariants);
+
+                // Debug: log dos produtos finais
+                console.log('Produtos com variantes:', productsWithVariants);
+
             } catch (err: any) {
                 console.error("Erro ao carregar produtos:", err);
                 setError(err.message || 'Falha ao carregar os produtos.');

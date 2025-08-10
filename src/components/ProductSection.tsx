@@ -1,6 +1,6 @@
 import { Product } from '../types/Product';
 import ProductCard from './ProductCard';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 
 interface ProductSectionProps {
     title: string;
@@ -14,10 +14,10 @@ const ProductSection = ({ title, products }: ProductSectionProps) => {
                 <div className="flex items-center mb-8">
                     <h2 className="text-2xl font-bold">{title}</h2>
                 </div>
-                <Link to="/products" className="absolute top-0 right-4 lg:right-18 z-10 hidden md:block"> 
-                    
+                <Link to="/products" className="absolute top-0 right-4 lg:right-18 z-10 hidden md:block">
+
                 </Link>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 justify-items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 justify-items-center">
                     {products.length > 0 ? (
                         products.map((product) => (
                             <ProductCard key={product.id} product={product} />

@@ -15,6 +15,7 @@ import AdminProductListPage from './pages/admin/AdminProductListPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import OrderHistoryPage from './pages/OrderHistoryPage';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
             <Route element={<AdminProtectedRoute />}>
               <Route path="admin" element={<AdminLayout />}>
                 <Route path="products" element={<AdminProductListPage />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
               </Route>
             </Route>
           </Routes>
