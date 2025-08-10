@@ -15,7 +15,6 @@ interface UserData {
 }
 
 interface LoginResponse {
-    accessToken: string;
     user: UserData;
     message?: string;
 }

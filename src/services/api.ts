@@ -15,15 +15,18 @@ interface FailedQueueItem {
 let isRefreshing = false;
 let failedQueue: FailedQueueItem[] = [];
 
-const processQueue = (error: Error | null, newAccessToken: string | null = null) => {
+const processQueue = (error: Error | null) => {
     failedQueue.forEach(prom => {
         if (error) {
             prom.reject(error);
         } else {
             const originalHeaders = prom.options.headers as Record<string, string> || {};
+            const newHeaders = { ...originalHeaders };
+            delete newHeaders['Authorization'];
+            
             const newConfig: RequestOptions = {
                 ...prom.options,
-                headers: { ...originalHeaders, 'Authorization': `Bearer ${newAccessToken}` },
+                headers: newHeaders,
                 isRetry: true
             };
             apiFetch(prom.endpoint, newConfig).then(prom.resolve).catch(prom.reject);
@@ -33,18 +36,12 @@ const processQueue = (error: Error | null, newAccessToken: string | null = null)
 };
 
 async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    const jwtToken = localStorage.getItem('jwt_token');
-
     const headers: Record<string, string> = {
         ...(options.headers as Record<string, string>),
     };
 
     if (!(options.body instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
-    }
-
-    if (jwtToken) {
-        headers['Authorization'] = `Bearer ${jwtToken}`;
     }
 
     const config: RequestOptions = {
@@ -55,6 +52,7 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
 
     try {
         const response = await fetch(`${BASE_URL}${endpoint}`, config);
+
         if (response.status === 401 && !options.isRetry) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
@@ -68,26 +66,20 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
                 try {
                     const refreshResponse = await fetch(`${BASE_URL}/auth/refresh`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
                     });
 
                     if (!refreshResponse.ok) {
-                        localStorage.removeItem('jwt_token');
+                        // Não é mais necessário remover do localStorage se o token não está lá.
+                        localStorage.removeItem('user'); // Remove apenas o usuário.
                         window.dispatchEvent(new CustomEvent('unauthorized-logout'));
                         processQueue(new Error('Sessão expirada. Faça login novamente.'));
                         reject(new Error('Sessão expirada. Faça login novamente.'));
                         return;
                     }
 
-                    const refreshData = await refreshResponse.json();
-                    const newAccessToken = refreshData.accessToken;
-                    localStorage.setItem('jwt_token', newAccessToken);
-
-                    const originalHeaders = config.headers as Record<string, string> || {};
                     const newConfigForOriginalRequest: RequestOptions = {
                         ...config,
-                        headers: { ...originalHeaders, 'Authorization': `Bearer ${newAccessToken}` },
                         isRetry: true
                     };
                     const originalResponse = await fetch(`${BASE_URL}${endpoint}`, newConfigForOriginalRequest);
@@ -99,11 +91,11 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
                     }
 
                     const originalData = await originalResponse.json();
-                    processQueue(null, newAccessToken);
+                    processQueue(null);
                     resolve(originalData as T);
 
                 } catch (refreshError: any) {
-                    localStorage.removeItem('jwt_token');
+                    localStorage.removeItem('user');
                     window.dispatchEvent(new CustomEvent('unauthorized-logout'));
                     processQueue(refreshError);
                     reject(refreshError);

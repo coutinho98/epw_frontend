@@ -3,10 +3,11 @@ import React from 'react';
 import api from '../services/api';
 import { User } from '../types/User';
 import { AuthLoginDto } from '../types/AuthLoginDto';
+import { toast } from 'sonner';
 
 interface AuthResponse {
-    accessToken: string;
     user: User;
+    message?: string;
 }
 
 interface AuthContextType {
@@ -25,7 +26,6 @@ interface AuthProviderProps {
 }
 
 const USER_KEY = 'user';
-const TOKEN_KEY = 'jwt_token';
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
@@ -38,38 +38,45 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             const response = await api.post<AuthResponse>('/auth/login', credentials);
             setUser(response.user);
-            localStorage.setItem(TOKEN_KEY, response.accessToken);
             localStorage.setItem(USER_KEY, JSON.stringify(response.user));
+            toast.success('Login realizado com sucesso!');
         } catch (error) {
             console.error('Falha no login:', error);
+            toast.error('Falha no login. Verifique suas credenciais.');
             throw new Error('Falha no login');
         }
     };
 
-    const logout = () => {
-        api.post('/auth/logout', {});
-        setUser(null);
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
+    const logout = async () => {
+        try {
+            await api.post('/auth/logout', {});
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+        } finally {
+            setUser(null);
+            localStorage.removeItem(USER_KEY);
+            toast.info('Você foi desconectado.');
+        }
     };
 
     useEffect(() => {
         const checkAuth = async () => {
-            const jwtToken = localStorage.getItem(TOKEN_KEY);
-            const storedUser = localStorage.getItem(USER_KEY);
-            
-            if (jwtToken && storedUser) {
-                try {
-                    const parsedUser: User = JSON.parse(storedUser);
-                    setUser(parsedUser);
-                } catch (error) {
-                    console.error('Falha ao restaurar sessão:', error);
-                    localStorage.removeItem(TOKEN_KEY);
-                    localStorage.removeItem(USER_KEY);
+            try {
+                const response = await api.get<User>('/auth/me'); 
+                if (response && response.email) {
+                    setUser(response);
+                    localStorage.setItem(USER_KEY, JSON.stringify(response));
+                } else {
                     setUser(null);
+                    localStorage.removeItem(USER_KEY);
                 }
+            } catch (error) {
+                console.error('Sessão inválida ou expirada. Limpando dados do usuário.', error);
+                setUser(null);
+                localStorage.removeItem(USER_KEY);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
         checkAuth();
     }, []);

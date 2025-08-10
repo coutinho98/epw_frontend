@@ -13,6 +13,10 @@ const CartSidebar: React.FC<CartSidebarProps> = () => {
         updateItemQuantity(variantId, currentQuantity + delta);
     };
 
+    const handleCheckout = () => {
+        toggleCart();
+    };
+
     return (
         <Sheet open={isCartOpen} onOpenChange={toggleCart}>
             <SheetContent side="right" className="w-full sm:max-w-md flex flex-col text-white bg-black border-black">
@@ -68,9 +72,11 @@ const CartSidebar: React.FC<CartSidebarProps> = () => {
                             <span>Total:</span>
                             <span>R$ {cartTotal.toFixed(2)}</span>
                         </div>
-                        <Button className="w-full h-12 bg-white text-black hover:bg-gray-300">
-                            Finalizar Compra
-                        </Button>
+                        <Link to="/checkout" onClick={handleCheckout} className="w-full">
+                            <Button className="w-full h-12 bg-white text-black hover:bg-gray-300">
+                                Finalizar Compra
+                            </Button>
+                        </Link>
                     </div>
                 )}
             </SheetContent>

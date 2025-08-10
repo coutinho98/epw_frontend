@@ -65,13 +65,16 @@ const CheckoutPage = () => {
     complement: '',
   });
 
+  const [hasShownToast, setHasShownToast] = useState(false);
+
   useEffect(() => {
-    if (cartItems.length > 0) {
+    if (cartItems.length > 0 && !hasShownToast) {
       toast.warning('Você tem itens no seu carrinho que ainda não foram comprados.', {
         id: 'checkout-warning'
       });
+      setHasShownToast(true);
     }
-  }, [cartItems]);
+  }, [cartItems, hasShownToast]);
 
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();

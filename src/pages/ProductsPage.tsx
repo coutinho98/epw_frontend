@@ -1,6 +1,6 @@
 // src/pages/ProductsPage.tsx
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
@@ -105,7 +105,10 @@ const ProductsPage = () => {
     }
 
     if (error) {
-        return <div className="text-center p-8 text-red-500">{error}</div>;
+        return (<div className="text-center p-8 text-white">
+            <p className="text-3xl md:text-3xl font-bold  mb-4">Estamos atualizando nossa coleção! Em breve teremos novos produtos nesta categoria.</p>
+            <Link to="/" className="inline-block text-blue-400 hover:underline">Ver todos os produtos</Link>
+        </div>)
     }
 
     if (products.length === 0) {
