@@ -2,16 +2,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Button } from './ui/button';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
-import { XIcon, MinusIcon, PlusIcon, ShoppingCartIcon } from 'lucide-react';
+import { XIcon, ShoppingCartIcon } from 'lucide-react';
 
 interface CartSidebarProps { }
 
 const CartSidebar: React.FC<CartSidebarProps> = () => {
-    const { cartItems, isCartOpen, toggleCart, removeItem, updateItemQuantity, cartTotal, cartItemCount } = useCart();
-
-    const handleQuantityChange = (variantId: string, currentQuantity: number, delta: number) => {
-        updateItemQuantity(variantId, currentQuantity + delta);
-    };
+    const { cartItems, isCartOpen, toggleCart, removeItem, cartTotal, cartItemCount } = useCart();
+   
 
     const handleCheckout = () => {
         toggleCart();

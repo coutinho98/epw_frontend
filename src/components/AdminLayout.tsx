@@ -1,12 +1,11 @@
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { Outlet, NavLink } from 'react-router-dom';
 import { Button } from './ui/button';
 import { useAuth } from '../context/AuthContext'; 
 
-import { BarChart3, Package, Tag, ShoppingCart, Users, LogOut, LayoutDashboard } from 'lucide-react'; 
+import { BarChart3, Package, Tag, ShoppingCart, Users, LogOut } from 'lucide-react'; 
 
 const AdminLayout: React.FC = () => {
     const { user, logout } = useAuth(); 
-    const location = useLocation(); 
 
     const tabs = [
         { id: 'dashboard', label: 'Dashboard', icon: BarChart3, path: '/admin/dashboard' },

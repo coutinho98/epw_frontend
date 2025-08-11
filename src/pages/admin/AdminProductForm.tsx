@@ -91,12 +91,11 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                 isAvailable: values.isAvailable,
             };
 
-            let response;
             if (productToEdit) {
-                response = await api.patch(`/products/${productToEdit.id}`, productData);
+                await api.patch(`/products/${productToEdit.id}`, productData);
                 toast.success('Produto atualizado com sucesso!');
             } else {
-                response = await api.post('/products', productData);
+                await api.post('/products', productData);
                 toast.success('Produto adicionado com sucesso!');
             }
             onSuccess();
