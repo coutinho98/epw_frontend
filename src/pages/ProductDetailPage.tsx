@@ -248,11 +248,11 @@ const ProductDetailPage: React.FC = () => {
                 <div className="lg:w-1/2 flex flex-col justify-start sticky top-20 h-fit">
                     <h1 className="text-3xl lg:text-4xl tracking-widest mb-4">{product.name}</h1>
                     <h3 className="text-base lg:text-base mb-3 tracking-widest text-white">R$ {product.price.toFixed(2)}</h3>
-                    {selectedVariantStock !== null && (
+                   {/*  {selectedVariantStock !== null && (
                         <h2 className="mb-4 text-1xl tracking-widest text-white">
                             Estoque: {selectedVariantStock}
                         </h2>
-                    )}
+                    )} */}
                     {availableSizesForColor.length > 0 && (
                         <ProductVariantSelector
                             uniqueColorsForDisplay={uniqueColorsForDisplay}

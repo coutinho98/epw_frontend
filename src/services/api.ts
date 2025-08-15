@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://epwfit.vercel.app/api';
 
 interface RequestOptions extends RequestInit {
     headers?: HeadersInit;
@@ -23,7 +23,7 @@ const processQueue = (error: Error | null) => {
             const originalHeaders = prom.options.headers as Record<string, string> || {};
             const newHeaders = { ...originalHeaders };
             delete newHeaders['Authorization'];
-            
+
             const newConfig: RequestOptions = {
                 ...prom.options,
                 headers: newHeaders,
@@ -50,10 +50,14 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
         credentials: 'include',
     };
 
+
+
     try {
         const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
+
         if (response.status === 401 && !options.isRetry) {
+
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject, endpoint, options });
@@ -70,14 +74,12 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
                     });
 
                     if (!refreshResponse.ok) {
-                        // Não é mais necessário remover do localStorage se o token não está lá.
-                        localStorage.removeItem('user'); // Remove apenas o usuário.
+                        localStorage.removeItem('user');
                         window.dispatchEvent(new CustomEvent('unauthorized-logout'));
                         processQueue(new Error('Sessão expirada. Faça login novamente.'));
                         reject(new Error('Sessão expirada. Faça login novamente.'));
                         return;
                     }
-
                     const newConfigForOriginalRequest: RequestOptions = {
                         ...config,
                         isRetry: true
@@ -95,6 +97,7 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
                     resolve(originalData as T);
 
                 } catch (refreshError: any) {
+                    console.error('❌ Refresh error:', refreshError);
                     localStorage.removeItem('user');
                     window.dispatchEvent(new CustomEvent('unauthorized-logout'));
                     processQueue(refreshError);
@@ -124,6 +127,7 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
         }
         return null as T;
     } catch (error) {
+        console.error('❌ Request failed:', error);
         throw error;
     }
 }

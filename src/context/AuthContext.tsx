@@ -59,27 +59,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const response = await api.get<User>('/auth/me'); 
-                if (response && response.email) {
-                    setUser(response);
-                    localStorage.setItem(USER_KEY, JSON.stringify(response));
-                } else {
-                    setUser(null);
-                    localStorage.removeItem(USER_KEY);
-                }
-            } catch (error) {
-                console.error('Sessão inválida ou expirada. Limpando dados do usuário.', error);
+   useEffect(() => {
+    const checkAuth = async () => {
+        try {
+            const response = await api.get<User>('/auth/me'); 
+            if (response && response.email) {
+                setUser(response);
+                localStorage.setItem(USER_KEY, JSON.stringify(response));
+            } else {
                 setUser(null);
                 localStorage.removeItem(USER_KEY);
-            } finally {
-                setLoading(false);
             }
-        };
-        checkAuth();
-    }, []);
+        } catch (error: any) {
+            if (error.message?.includes('Sessão expirada')) {
+                console.error('Sessão expirada, usuário será deslogado:', error);
+                setUser(null);
+                localStorage.removeItem(USER_KEY);
+            } else {
+                console.error('Erro na verificação de autenticação:', error);
+                const storedUser = localStorage.getItem(USER_KEY);
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
+                }
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+    checkAuth();
+}, []);
 
     return (
         <AuthContext.Provider value={{ user, isAdmin, isAuthenticated, loading, login, logout }}>

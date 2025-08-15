@@ -53,7 +53,7 @@ const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
                                 className={`min-w-[60px] h-12 text-base ${selectedSize === size && isAvailable
                                     ? 'text-white border'
                                     : 'bg-transparent border-neutral-900'
-                                    } ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''} // Estilo para desabilitado
+                                    } ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''} 
                                 }`}
                             >
                                 {size}

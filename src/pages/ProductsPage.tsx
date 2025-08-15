@@ -1,4 +1,3 @@
-// src/pages/ProductsPage.tsx
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../services/api';
@@ -52,7 +51,6 @@ const ProductsPage = () => {
                             const variantsResponse = await api.get<Variant[]>(`/variants/product/${product.id}`);
                             const variants = Array.isArray(variantsResponse) ? variantsResponse : [];
 
-                            console.log(`Produto ${product.id} tem ${variants.length} variantes:`, variants);
 
                             const sortedVariants = variants.sort((a, b) => {
                                 return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -85,8 +83,6 @@ const ProductsPage = () => {
                 setCategoryName(categoryNameFromApi);
                 setProducts(productsWithVariants);
 
-                // Debug: log dos produtos finais
-                console.log('Produtos com variantes:', productsWithVariants);
 
             } catch (err: any) {
                 console.error("Erro ao carregar produtos:", err);

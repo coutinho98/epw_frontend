@@ -57,7 +57,6 @@ const AdminDashboard = () => {
         const fetchDashboardData = async () => {
             setLoading(true);
             try {
-                // Substitua a chamada com dados mockados pela chamada real à API
                 const response = await api.get<DashboardData>('/dashboard/stats');
                 setDashboardData(response);
             } catch (err: any) {
