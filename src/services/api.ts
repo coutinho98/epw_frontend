@@ -50,12 +50,8 @@ async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Prom
         credentials: 'include',
     };
 
-
-
     try {
         const response = await fetch(`${BASE_URL}${endpoint}`, config);
-
-
         if (response.status === 401 && !options.isRetry) {
 
             if (isRefreshing) {

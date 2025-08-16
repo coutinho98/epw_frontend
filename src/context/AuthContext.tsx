@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 
 interface AuthResponse {
     user: User;
+    accessToken: string;
+    refreshToken: string;
     message?: string;
 }
 
@@ -17,6 +19,7 @@ interface AuthContextType {
     loading: boolean;
     login: (credentials: AuthLoginDto) => Promise<void>;
     logout: () => void;
+    forceLogout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,8 +40,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const login = async (credentials: AuthLoginDto) => {
         try {
             const response = await api.post<AuthResponse>('/auth/login', credentials);
-            setUser(response.user);
+
+            localStorage.setItem('accessToken', response.accessToken);
+            localStorage.setItem('refreshToken', response.refreshToken);
             localStorage.setItem(USER_KEY, JSON.stringify(response.user));
+
+            setUser(response.user);
             toast.success('Login realizado com sucesso!');
         } catch (error) {
             console.error('Falha no login:', error);
@@ -49,48 +56,110 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const logout = async () => {
         try {
-            await api.post('/auth/logout', {});
-        } catch (error) {
-            console.error('Erro ao fazer logout:', error);
-        } finally {
-            setUser(null);
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
             localStorage.removeItem(USER_KEY);
+            setUser(null);
+            await api.post('/auth/logout', {});
+
+        } catch (error) {
+        } finally {
             toast.info('Você foi desconectado.');
         }
     };
 
-   useEffect(() => {
-    const checkAuth = async () => {
-        try {
-            const response = await api.get<User>('/auth/me'); 
-            if (response && response.email) {
-                setUser(response);
-                localStorage.setItem(USER_KEY, JSON.stringify(response));
-            } else {
-                setUser(null);
-                localStorage.removeItem(USER_KEY);
-            }
-        } catch (error: any) {
-            if (error.message?.includes('Sessão expirada')) {
-                console.error('Sessão expirada, usuário será deslogado:', error);
-                setUser(null);
-                localStorage.removeItem(USER_KEY);
-            } else {
-                console.error('Erro na verificação de autenticação:', error);
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const refreshToken = localStorage.getItem('refreshToken');
                 const storedUser = localStorage.getItem(USER_KEY);
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
+
+                if (!accessToken || !refreshToken) {
+                    setUser(null);
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    localStorage.removeItem(USER_KEY);
+                    setLoading(false);
+                    return;
                 }
+
+                if (storedUser) {
+                    try {
+                        setUser(JSON.parse(storedUser));
+                    } catch (e) {
+                        console.error('Erro ao parsear dados do usuário:', e);
+                    }
+                }
+
+                const response = await api.get<User>('/auth/me');
+
+                if (response && response.email) {
+                    setUser(response);
+                    localStorage.setItem(USER_KEY, JSON.stringify(response));
+                } else {
+                    clearUserData();
+                }
+            } catch (error: any) {
+                console.error('❌ Erro na validação da sessão:', error);
+
+                if (error.status === 401 || error.message?.includes('Sessão expirada')) {
+                    clearUserData();
+                } else {
+                    const storedUser = localStorage.getItem(USER_KEY);
+                    if (storedUser) {
+                        try {
+                            setUser(JSON.parse(storedUser));
+                        } catch (e) {
+                            clearUserData();
+                        }
+                    } else {
+                        clearUserData();
+                    }
+                }
+            } finally {
+                setLoading(false);
             }
-        } finally {
-            setLoading(false);
-        }
+        };
+
+        const clearUserData = () => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem(USER_KEY);
+            setUser(null);
+        };
+
+        checkAuth();
+
+        const handleUnauthorizedLogout = () => {
+            clearUserData();
+            toast.error('Sessão expirada. Faça login novamente.');
+        };
+
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'accessToken' && !e.newValue) {
+                setUser(null);
+            }
+        };
+
+        window.addEventListener('unauthorized-logout', handleUnauthorizedLogout);
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('unauthorized-logout', handleUnauthorizedLogout);
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
+    const forceLogout = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem(USER_KEY);
+        setUser(null);
     };
-    checkAuth();
-}, []);
 
     return (
-        <AuthContext.Provider value={{ user, isAdmin, isAuthenticated, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, isAdmin, isAuthenticated, loading, login, logout, forceLogout }}>
             {children}
         </AuthContext.Provider>
     );

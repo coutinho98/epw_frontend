@@ -11,6 +11,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Product } from '@/types/Product';
+import { Category } from '@/types/Category';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 const formSchema = z.object({
     name: z.string().min(1, { message: 'O nome é obrigatório.' }),
@@ -21,6 +29,7 @@ const formSchema = z.object({
     images: z.any().optional(),
     isFeatured: z.boolean(),
     isAvailable: z.boolean(),
+    categoryId: z.string().uuid({ message: 'A categoria é obrigatória.' }).nullable(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -34,6 +43,8 @@ interface AdminProductFormProps {
 
 const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, onSuccess, productToEdit }) => {
     const [imagePreview, setImagePreview] = useState<string[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -45,8 +56,23 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
             images: undefined,
             isFeatured: false,
             isAvailable: true,
+            categoryId: null,
         },
     });
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await api.get<Category[]>('/categories');
+                setCategories(response);
+            } catch (err) {
+                console.error("Falha ao buscar categorias:", err);
+                toast.error('Falha ao carregar categorias.');
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         if (productToEdit) {
@@ -60,6 +86,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                 images: undefined,
                 isFeatured: productToEdit.isFeatured,
                 isAvailable: productToEdit.isAvailable,
+                categoryId: productToEdit.categoryId,
             });
             if (productToEdit.mainImageUrl && productToEdit.mainImageUrl.length > 0) {
                 setImagePreview(productToEdit.mainImageUrl);
@@ -89,6 +116,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                 price: values.price,
                 isFeatured: values.isFeatured,
                 isAvailable: values.isAvailable,
+                categoryId: values.categoryId || undefined,
             };
 
             if (productToEdit) {
@@ -127,6 +155,30 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                                         <FormControl>
                                             <Input placeholder="Nome do Produto" className="text-white bg-zinc-900 border-gray-700" {...field} />
                                         </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="categoryId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Categoria</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                            <FormControl>
+                                                <SelectTrigger className="text-white bg-zinc-900 border-gray-700">
+                                                    <SelectValue placeholder="Selecione uma categoria" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="text-white bg-zinc-900 border-gray-700">
+                                                {categories.map(category => (
+                                                    <SelectItem key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -245,7 +297,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                                 )}
                             />
                             <div className="flex justify-end space-x-4">
-                                <Button type="button" variant="outline" onClick={onClose} className="text-white border-gray-700 hover:bg-gray-700">Cancelar</Button>
+                                <Button type="button" variant="outline" onClick={onClose} className="text-black border-gray-700 hover:bg-gray-200">Cancelar</Button>
                                 <Button type="submit" className="bg-white text-black hover:bg-gray-300">{productToEdit ? 'Salvar Alterações' : 'Adicionar Produto'}</Button>
                             </div>
                         </form>

@@ -18,7 +18,7 @@ const ProductDetailPage: React.FC = () => {
     const [quantity, setQuantity] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedVariantStock, setSelectedVariantStock] = useState<number | null>(null);
+    const [_selectedVariantStock, setSelectedVariantStock] = useState<number | null>(null);
 
     const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
 

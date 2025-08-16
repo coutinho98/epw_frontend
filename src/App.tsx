@@ -1,14 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { Toaster } from './components/ui/sonner';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
-import { Toaster } from './components/ui/sonner';
 import Layout from './components/Layout';
-
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import AdminLayout from './components/AdminLayout';
 import AdminProductListPage from './pages/admin/AdminProductListPage';
@@ -16,6 +15,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminCategoryPage from './pages/admin/AdminCategoryPage';
 
 const App = () => {
   return (
@@ -37,8 +37,9 @@ const App = () => {
             </Route>
             <Route element={<AdminProtectedRoute />}>
               <Route path="admin" element={<AdminLayout />}>
-                <Route path="products" element={<AdminProductListPage />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProductListPage />} />
+                <Route path="categories" element={<AdminCategoryPage />} /> 
               </Route>
             </Route>
           </Routes>

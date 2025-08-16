@@ -120,8 +120,8 @@ const OrderHistoryPage = () => {
             ) : (
                 <div className="space-y-8">
                     {orders.map((order) => (
-                        <Card 
-                            key={order.id} 
+                        <Card
+                            key={order.id}
                             className="bg-white/5 backdrop-blur-md border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
                         >
                             <CardHeader className="border-b border-white/10 pb-4">
@@ -133,13 +133,14 @@ const OrderHistoryPage = () => {
                                         </CardDescription>
                                     </div>
                                     <span
-                                        className={`mt-2 md:mt-0 px-3 py-1 rounded-full text-xs font-semibold ${
-                                            order.status === 'pending'
-                                                ? 'bg-yellow-500/20 text-yellow-400'
-                                                : 'bg-green-500/20 text-green-400'
-                                        }`}
+                                        className={`mt-2 md:mt-0 px-3 py-1 rounded-full text-xs font-semibold ${order.paymentStatus === 'PAID'
+                                                ? 'bg-green-500/20 text-green-400'
+                                                : order.paymentStatus === 'PENDING'
+                                                    ? 'bg-yellow-500/20 text-yellow-400'
+                                                    : 'bg-red-500/20 text-red-400'
+                                            }`}
                                     >
-                                        {order.status}
+                                        {order.paymentStatus}
                                     </span>
                                 </div>
                             </CardHeader>
@@ -156,8 +157,8 @@ const OrderHistoryPage = () => {
                                     </TableHeader>
                                     <TableBody>
                                         {order.items.map((item) => (
-                                            <TableRow 
-                                                key={item.id} 
+                                            <TableRow
+                                                key={item.id}
                                                 className="hover:bg-white/5 transition-colors"
                                             >
                                                 <TableCell>
@@ -169,8 +170,8 @@ const OrderHistoryPage = () => {
                                                                 className="w-14 h-14 object-cover rounded-lg border border-white/10"
                                                             />
                                                         )}
-                                                        <Link 
-                                                            to={`/products/${item.product?.slug}`} 
+                                                        <Link
+                                                            to={`/products/${item.product?.slug}`}
                                                             className="text-indigo-400 hover:text-indigo-300 transition-colors"
                                                         >
                                                             {item.product?.name || 'Produto não encontrado'}
