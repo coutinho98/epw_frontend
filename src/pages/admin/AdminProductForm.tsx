@@ -44,7 +44,7 @@ interface AdminProductFormProps {
 const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, onSuccess, productToEdit }) => {
     const [imagePreview, setImagePreview] = useState<string[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    
+
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -238,34 +238,6 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="images"
-                                render={() => (
-                                    <FormItem>
-                                        <FormLabel>Imagens do Produto</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="images"
-                                                type="file"
-                                                multiple
-                                                onChange={handleFileChange}
-                                                className="text-white bg-zinc-900 border-gray-700 file:text-white file:bg-gray-700 hover:file:bg-gray-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            {imagePreview.length > 0 && (
-                                <div className="mt-2 flex space-x-2 overflow-x-auto">
-                                    {imagePreview.map((url, index) => (
-                                        <div key={index} className="w-24 h-24 border rounded-md overflow-hidden flex-shrink-0">
-                                            <img src={url} alt={`Preview ${index + 1}`} className="object-cover w-full h-full" />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
                             <FormField
                                 control={form.control}
                                 name="isFeatured"

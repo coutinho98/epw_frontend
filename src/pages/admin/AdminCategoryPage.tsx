@@ -149,7 +149,7 @@ const AdminCategoryPage: React.FC = () => {
         <div className="p-4 text-white">
             <h1 className="text-3xl font-bold mb-6">Gerenciar Categorias</h1>
             <div className="flex items-center justify-between mb-4">
-                <Button onClick={() => { setEditingCategory(null); setIsFormOpen(true); }} className="bg-white text-black hover:bg-gray-300">
+                <Button onClick={() => { setEditingCategory(null); setIsFormOpen(true); }} className="bg-white text-black hover:bg-gray-700">
                     <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Nova Categoria
                 </Button>
                 <Input

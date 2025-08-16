@@ -144,7 +144,7 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                                             <TableCell>{variant.stock}</TableCell>
                                             <TableCell>R$ {variant.additionalPrice.toFixed(2)}</TableCell>
                                             <TableCell className="text-right flex items-center justify-end space-x-2">
-                                                <Button variant="outline" size="sm" onClick={() => handleEditVariantClick(variant)} className="text-white border-white hover:bg-white hover:text-black">
+                                                <Button variant="outline" size="sm" onClick={() => handleEditVariantClick(variant)} className="text-black border-white hover:bg-white hover:text-black">
                                                     Editar
                                                 </Button>
                                                 <AlertDialog>

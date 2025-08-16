@@ -138,7 +138,7 @@ const AdminProductListPage: React.FC = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEditProductClick(product)}
-                            className="text-white hover:bg-gray-700"
+                            className="text-white hover:text-gray-400"
                             title="Editar"
                         >
                             <Edit className="h-4 w-4" />
@@ -147,14 +147,14 @@ const AdminProductListPage: React.FC = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleManageVariationsClick(product)}
-                            className="text-white hover:bg-gray-700"
+                            className="text-white hover:text-gray-400"
                             title="Gerenciar Variações"
                         >
                             <FolderEdit className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700" title="Remover">
+                                <Button variant="ghost" size="icon" className="text-white hover:text-gray-400" title="Remover">
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </AlertDialogTrigger>
