@@ -8,6 +8,7 @@ import ProductImageGallery from '../components/ProductImageGallery';
 import ProductVariantSelector from '../components/ProductVariantSelector';
 import ProductQuantitySelector from '../components/ProductQuantitySelector';
 import AddToCartButton from '../components/AddToCartButton';
+import { useCart } from '../context/CartContext';
 
 const ProductDetailPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -19,8 +20,13 @@ const ProductDetailPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [_selectedVariantStock, setSelectedVariantStock] = useState<number | null>(null);
-
     const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
+
+    const { cartItemCount } = useCart();
+    
+    const isWholesaleActive = cartItemCount >= 5;
+    const currentPrice = product && isWholesaleActive && product.wholesale ? Number(product.wholesale) : Number(product?.price || 0);
+    const hasWholesale = product && !!product.wholesale;
 
     const allPossibleSizes = ['PP', 'P', 'M', 'G'];
 
@@ -241,18 +247,29 @@ const ProductDetailPage: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 md:p-8 text-pink">
+            {isWholesaleActive && (
+                <div className="bg-green-600 text-white text-center py-2 mb-4 rounded">
+                    🎉 Preços de atacado ativados! (5+ produtos)
+                </div>
+            )}
             <div className="flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-1/2">
                     <ProductImageGallery images={imagesToDisplay} productName={product.name} />
                 </div>
                 <div className="lg:w-1/2 flex flex-col justify-start sticky top-20 h-fit">
                     <h1 className="text-3xl lg:text-4xl tracking-widest mb-4">{product.name}</h1>
-                    <h3 className="text-base lg:text-base mb-3 tracking-widest text-white">R$ {product.price.toFixed(2)}</h3>
-                   {/*  {selectedVariantStock !== null && (
-                        <h2 className="mb-4 text-1xl tracking-widest text-white">
-                            Estoque: {selectedVariantStock}
-                        </h2>
-                    )} */}
+                    <div className="text-base lg:text-base mb-3 tracking-widest text-white">
+                        {isWholesaleActive && hasWholesale ? (
+                            <div>
+                                <span className="text-green-400 font-bold text-xl">R$ {currentPrice.toFixed(2)}</span>
+                                <div className="text-sm text-gray-400 line-through">
+                                    Antes: R$ {product.price.toFixed(2)}
+                                </div>
+                            </div>
+                        ) : (
+                            <span>R$ {currentPrice.toFixed(2)}</span>
+                        )}
+                    </div>
                     {availableSizesForColor.length > 0 && (
                         <ProductVariantSelector
                             uniqueColorsForDisplay={uniqueColorsForDisplay}

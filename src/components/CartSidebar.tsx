@@ -8,7 +8,8 @@ interface CartSidebarProps { }
 
 const CartSidebar: React.FC<CartSidebarProps> = () => {
     const { cartItems, isCartOpen, toggleCart, removeItem, cartTotal, cartItemCount } = useCart();
-   
+    
+    const isWholesaleActive = cartItemCount >= 5;
 
     const handleCheckout = () => {
         toggleCart();
@@ -26,6 +27,13 @@ const CartSidebar: React.FC<CartSidebarProps> = () => {
                         Adicionado ao carrinho
                     </SheetDescription>
                 </SheetHeader>
+                
+                {isWholesaleActive && (
+                    <div className="bg-green-600 text-white text-center py-2 mx-4 mb-2 rounded">
+                        🎉 Preços de atacado ativados!
+                    </div>
+                )}
+                
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {cartItems.length === 0 ? (
                         <div className="text-center text-white mt-10">

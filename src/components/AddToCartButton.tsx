@@ -1,12 +1,12 @@
+import React from 'react';
 import { Button } from './ui/button';
+import { useCart } from '../context/CartContext';
 import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
-import { useCart } from '../context/CartContext';
-import { CartItem } from '../types/Cart';
 import { toast } from 'sonner';
 
 interface AddToCartButtonProps {
-    product: Product & { variants: Variant[] } | null;
+    product: Product & { variants: Variant[] };
     selectedColorVariant: string | null;
     selectedSize: string | null;
     quantity: number;
@@ -16,53 +16,57 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     product,
     selectedColorVariant,
     selectedSize,
-    quantity,
+    quantity
 }) => {
-    const { addItem } = useCart();
+    const { addItem, cartItemCount } = useCart();
+    
+    const isWholesaleActive = cartItemCount >= 5;
+    const currentPrice = isWholesaleActive && product.wholesale ? Number(product.wholesale) : Number(product.price);
 
     const handleAddToCart = () => {
-        if (!product) {
-            toast.error("Erro: Produto não encontrado.");
+        if (!selectedColorVariant || !selectedSize) {
+            toast.error('Por favor, selecione cor e tamanho');
             return;
         }
 
-        const finalSelectedVariant = product.variants.find(
+        const selectedVariant = product.variants.find(
             v => v.color === selectedColorVariant && v.size === selectedSize
         );
 
-        if (!finalSelectedVariant) {
-            toast.error('Por favor, selecione uma cor e um tamanho válidos.');
+        if (!selectedVariant) {
+            toast.error('Variante não encontrada');
             return;
         }
 
-        const itemToAdd: CartItem = {
+        if (selectedVariant.stock < quantity) {
+            toast.error('Quantidade não disponível em estoque');
+            return;
+        }
+
+        const cartItem = {
             productId: product.id,
             productName: product.name,
-            variantId: finalSelectedVariant.id,
-            color: finalSelectedVariant.color,
-            size: finalSelectedVariant.size,
-            slug: product.slug, 
-            imageUrl: finalSelectedVariant.imageUrls?.[0] || product.mainImageUrl?.[0] || '', 
+            variantId: selectedVariant.id,
+            color: selectedColorVariant,
+            size: selectedSize,
+            imageUrl: selectedVariant.imageUrls?.[0] || '',
             name: product.name,
-            price: product.price + finalSelectedVariant.additionalPrice,
-            quantity: quantity,
+            price: currentPrice,
+            quantity,
+            slug: product.slug,
         };
 
-        addItem(itemToAdd); 
-
-        toast.success(`${itemToAdd.productName} (${itemToAdd.size}, ${itemToAdd.color}) adicionado ao carrinho!`, {
-            description: `Quantidade: ${itemToAdd.quantity} - Total: R$${(itemToAdd.price * itemToAdd.quantity).toFixed(2)}`,
-            duration: 3000, 
-        });
+        addItem(cartItem);
+        toast.success('Produto adicionado ao carrinho!');
     };
 
     return (
-        <Button
+        <Button 
             onClick={handleAddToCart}
-            className="flex-grow bg-white text-black py-6 text-sm cursor-pointer hover:bg-gray-300"
-            disabled={!selectedColorVariant || !selectedSize || quantity < 1}
+            className="w-full bg-white text-black hover:bg-gray-300 h-12"
+            disabled={!selectedColorVariant || !selectedSize}
         >
-            Adicionar ao Carrinho
+            ADICIONAR AO CARRINHO
         </Button>
     );
 };

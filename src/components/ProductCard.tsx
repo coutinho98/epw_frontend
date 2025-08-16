@@ -3,14 +3,15 @@ import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
 import { Link } from 'react-router-dom';
 import ColorVariantDot from './ColorVariantDot';
+import { useWholesalePrice } from '../hooks/useWholesalePrice';
 
 interface ProductCardProps {
     product: Product & { variants: Variant[] };
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+    const { currentPrice, isWholesaleActive, hasWholesale } = useWholesalePrice(product);
 
-   
     const uniqueVariants = product.variants.filter((variant: Variant, index: number, self: Variant[]) =>
         index === self.findIndex((v) => v.color === variant.color)
     );
@@ -73,7 +74,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
             </Link>
             <div className="mt-2 text-center">
                 <h3 className="text-white line-clamp-3 tracking-widest">{product.name}</h3>
-                <h5 className="text-white tracking-widest">R${product.price.toFixed(2)}</h5>
+                <div className="text-white tracking-widest">
+                    {isWholesaleActive && hasWholesale ? (
+                        <div>
+                            <span className="text-green-400 font-bold">R${currentPrice.toFixed(2)}</span>
+                            <div className="text-xs text-gray-400 line-through">
+                                R${product.price.toFixed(2)}
+                            </div>
+                        </div>
+                    ) : (
+                        <span>R${currentPrice.toFixed(2)}</span>
+                    )}
+                </div>
             </div>
             {uniqueVariants.length > 0 && (
                 <div className="flex items-center space-x-2 mt-4 mb-30">

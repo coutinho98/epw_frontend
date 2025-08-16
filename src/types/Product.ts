@@ -7,8 +7,9 @@ export interface Product {
     slug: string;
     size: string;
     price: number;
+    wholesale?: number; 
     mainImageUrl: string[];
-    details: string | null; 
+    details: string | null;
     isFeatured: boolean;
     isAvailable: boolean;
     categoryId: string | null;

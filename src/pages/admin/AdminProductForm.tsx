@@ -26,6 +26,7 @@ const formSchema = z.object({
     details: z.string().nullable().optional(),
     slug: z.string().min(1, { message: 'O slug é obrigatório.' }),
     price: z.number().min(0, { message: 'O preço deve ser um valor positivo.' }),
+    wholesale: z.number().min(0, { message: 'O preço atacado deve ser um valor positivo.' }).optional(),
     images: z.any().optional(),
     isFeatured: z.boolean(),
     isAvailable: z.boolean(),
@@ -53,6 +54,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
             details: null,
             slug: '',
             price: 0,
+            wholesale: 0,
             images: undefined,
             isFeatured: false,
             isAvailable: true,
@@ -83,6 +85,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                 details: Array.isArray(detailsFromProduct) ? detailsFromProduct.join('\n') : null,
                 slug: productToEdit.slug,
                 price: productToEdit.price,
+                wholesale: (productToEdit as any).wholesale || 0,
                 images: undefined,
                 isFeatured: productToEdit.isFeatured,
                 isAvailable: productToEdit.isAvailable,
@@ -114,6 +117,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                 details: values.details ? values.details.split('\n').map(item => item.trim()).filter(item => item !== '') : undefined,
                 slug: values.slug,
                 price: values.price,
+                wholesale: values.wholesale || undefined,
                 isFeatured: values.isFeatured,
                 isAvailable: values.isAvailable,
                 categoryId: values.categoryId || undefined,
@@ -232,8 +236,31 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                                     <FormItem>
                                         <FormLabel>Preço</FormLabel>
                                         <FormControl>
-                                            <Input type="number" placeholder="0.00" className="text-white bg-zinc-900 border-gray-700" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                                            <Input type="number" step="0.01" placeholder="0.00" className="text-white bg-zinc-900 border-gray-700" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
                                         </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="wholesale"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Preço Atacado (5+ produtos)</FormLabel>
+                                        <FormControl>
+                                            <Input 
+                                                type="number" 
+                                                step="0.01"
+                                                placeholder="0.00" 
+                                                className="text-white bg-zinc-900 border-gray-700" 
+                                                {...field} 
+                                                onChange={e => field.onChange(parseFloat(e.target.value) || 0)} 
+                                            />
+                                        </FormControl>
+                                        <FormDescription className="text-gray-400">
+                                            Preço especial quando cliente compra 5 ou mais produtos (opcional)
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
