@@ -43,7 +43,7 @@ interface AdminProductFormProps {
 }
 
 const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, onSuccess, productToEdit }) => {
-    const [imagePreview, setImagePreview] = useState<string[]>([]);
+    const [_imagePreview, setImagePreview] = useState<string[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
 
     const form = useForm<FormValues>({
@@ -99,15 +99,6 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
             setImagePreview([]);
         }
     }, [productToEdit, form]);
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const files = Array.from(e.target.files);
-            form.setValue('images', files);
-            const urls = files.map(file => URL.createObjectURL(file));
-            setImagePreview(urls);
-        }
-    };
 
     const onSubmit = async (values: FormValues) => {
         try {
