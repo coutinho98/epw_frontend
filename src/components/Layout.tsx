@@ -15,7 +15,7 @@ import {
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
-import backgroundImage from '../assets/image/background.png';
+import backgroundImage from '../images/02-coroas.png';
 const Layout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { toggleCart, cartItemCount } = useCart();
@@ -42,7 +42,7 @@ const Layout: React.FC = () => {
 
     return (
         <div 
-            className="min-h-screen bg-black text-white flex flex-col"
+            className="min-h-screen bg-white/50 text-white flex flex-col"
             style={{ 
                 backgroundImage: `url(${backgroundImage})`, 
                 backgroundSize: 'cover', 

@@ -5,6 +5,7 @@ import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
 import ProductSection from '../components/ProductSection';
 import { Category } from '../types/Category';
+import coroaImage from '../images/02-coroas.png';
 
 interface ProductWithVariants extends Product {
     variants: Variant[];
@@ -112,7 +113,16 @@ const ProductsPage = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 w-full max-w-[1416px]">
+        <div 
+            className="container mx-auto p-4 w-full max-w-[1416px]"
+            style={{
+                backgroundImage: `url(${coroaImage})`,
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                minHeight: '80vh',
+            }}
+        >
             <h1 className="text-3xl md:text-4xl font-bold tracking-wider ">{categoryName}</h1>
             <ProductSection title="" products={products} />
         </div>
