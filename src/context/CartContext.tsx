@@ -54,36 +54,48 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         }
     }, [cartItems, userId]);
 
+    const updatePricesInCart = (items: CartItem[]): CartItem[] => {
+        const totalItemsInCart = items.reduce((sum, item) => sum + item.quantity, 0);
+        const isWholesaleActive = totalItemsInCart >= 5;
+
+        return items.map(item => {
+            const price = isWholesaleActive && item.wholesalePrice ? item.wholesalePrice : item.retailPrice;
+            return { ...item, price };
+        });
+    };
+
     const addItem = (itemToAdd: CartItem) => {
         setCartItems(prevItems => {
-            const existingItemIndex = prevItems.findIndex(
+            const newItems = [...prevItems];
+            const existingItemIndex = newItems.findIndex(
                 item => item.variantId === itemToAdd.variantId
             );
 
             if (existingItemIndex > -1) {
-                const updatedItems = [...prevItems];
-                updatedItems[existingItemIndex] = {
-                    ...updatedItems[existingItemIndex],
-                    quantity: updatedItems[existingItemIndex].quantity + itemToAdd.quantity,
-                };
-                return updatedItems;
+                newItems[existingItemIndex].quantity += itemToAdd.quantity;
             } else {
-                return [...prevItems, itemToAdd];
+                newItems.push(itemToAdd);
             }
+            
+            return updatePricesInCart(newItems);
         });
         setIsCartOpen(true);
     };
 
     const removeItem = (variantId: string) => {
-        setCartItems(prevItems => prevItems.filter(item => item.variantId !== variantId));
+        setCartItems(prevItems => {
+            const newItems = prevItems.filter(item => item.variantId !== variantId);
+            return updatePricesInCart(newItems);
+        });
     };
 
     const updateItemQuantity = (variantId: string, quantity: number) => {
         setCartItems(prevItems => {
-            const updatedItems = prevItems.map(item =>
+            const updatedItemsWithNewQuantity = prevItems.map(item =>
                 item.variantId === variantId ? { ...item, quantity } : item
             );
-            return updatedItems.filter(item => item.quantity > 0);
+            const newItems = updatedItemsWithNewQuantity.filter(item => item.quantity > 0);
+            return updatePricesInCart(newItems);
         });
     };
 

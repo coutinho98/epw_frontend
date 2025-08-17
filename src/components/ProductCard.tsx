@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Product } from '../types/Product';
 import { Variant } from '../types/Variant';
 import { Link } from 'react-router-dom';
 import ColorVariantDot from './ColorVariantDot';
 import { useWholesalePrice } from '../hooks/useWholesalePrice';
+import { useCart } from '../context/CartContext';
+import { Badge } from './ui/badge';
 
 interface ProductCardProps {
     product: Product & { variants: Variant[] };
@@ -11,6 +13,9 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
     const { currentPrice, isWholesaleActive, hasWholesale } = useWholesalePrice(product);
+    const { cartItems } = useCart();
+    
+    const [currentQuantityInCart, setCurrentQuantityInCart] = useState(0);
 
     const uniqueVariants = product.variants.filter((variant: Variant, index: number, self: Variant[]) =>
         index === self.findIndex((v) => v.color === variant.color)
@@ -18,6 +23,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
     const [mainImage, setMainImage] = useState(uniqueVariants?.[0]?.imageUrls?.[0] || '');
     const [selectedVariantId, setSelectedVariantId] = useState<string | null>(uniqueVariants?.[0]?.id || null);
+
+    useEffect(() => {
+        const totalQuantity = cartItems.reduce((sum, item) => {
+            if (item.productId === product.id) {
+                return sum + item.quantity;
+            }
+            return sum;
+        }, 0);
+        setCurrentQuantityInCart(totalQuantity);
+    }, [cartItems, product.id]);
 
     const handleVariantClick = (variant: Variant) => {
         setSelectedVariantId(variant.id);
@@ -70,6 +85,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
                         className="w-full h-full object-cover"
                         loading="lazy"
                     />
+                     {currentQuantityInCart > 0 && (
+                        <div className="absolute top-2 right-2">
+                            <Badge className="bg-white text-black font-bold text-sm">
+                                {currentQuantityInCart} no carrinho
+                            </Badge>
+                        </div>
+                    )}
                 </div>
             </Link>
             <div className="mt-2 text-center">
@@ -77,13 +99,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 <div className="text-white tracking-widest">
                     {isWholesaleActive && hasWholesale ? (
                         <div>
-                            <span className="text-green-400 font-bold">R${currentPrice.toFixed(2)}</span>
+                            <span className="text-green-400 font-bold">R${Number(currentPrice).toFixed(2)}</span>
                             <div className="text-xs text-gray-400 line-through">
-                                R${product.price.toFixed(2)}
+                                R${Number(product.price).toFixed(2)}
                             </div>
                         </div>
                     ) : (
-                        <span>R${currentPrice.toFixed(2)}</span>
+                        <span>R${Number(currentPrice).toFixed(2)}</span>
                     )}
                 </div>
             </div>

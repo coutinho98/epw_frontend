@@ -18,10 +18,7 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     selectedSize,
     quantity
 }) => {
-    const { addItem, cartItemCount } = useCart();
-    
-    const isWholesaleActive = cartItemCount >= 5;
-    const currentPrice = isWholesaleActive && product.wholesale ? Number(product.wholesale) : Number(product.price);
+    const { addItem } = useCart();
 
     const handleAddToCart = () => {
         if (!selectedColorVariant || !selectedSize) {
@@ -51,7 +48,9 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
             size: selectedSize,
             imageUrl: selectedVariant.imageUrls?.[0] || '',
             name: product.name,
-            price: currentPrice,
+            price: Number(product.price), 
+            retailPrice: Number(product.price),
+            wholesalePrice: product.wholesale ? Number(product.wholesale) : undefined,
             quantity,
             slug: product.slug,
         };
@@ -61,9 +60,9 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     };
 
     return (
-        <Button 
+        <Button
             onClick={handleAddToCart}
-            className="w-full bg-white text-black hover:bg-gray-300 h-12"
+            className="flex-grow bg-white text-black py-6 text-sm cursor-pointer hover:bg-gray-300"
             disabled={!selectedColorVariant || !selectedSize}
         >
             ADICIONAR AO CARRINHO

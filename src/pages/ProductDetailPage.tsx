@@ -156,8 +156,9 @@ const ProductDetailPage: React.FC = () => {
     }, [slug]);
 
     useEffect(() => {
+        let sizes: string[] = [];
         if (product && selectedColorVariant) {
-            const sizes = getAvailableSizesForColor(product, selectedColorVariant);
+            sizes = getAvailableSizesForColor(product, selectedColorVariant);
             setAvailableSizesForColor(sizes);
 
             const imagesForSelectedColor: string[] = [];
@@ -192,11 +193,13 @@ const ProductDetailPage: React.FC = () => {
             }
         } else if (product && !selectedColorVariant) {
             if (product.size && product.size.trim() !== '') {
-                setAvailableSizesForColor([product.size]);
+                sizes = [product.size];
+                setAvailableSizesForColor(sizes);
                 if (!selectedSize || selectedSize !== product.size) {
                     setSelectedSize(product.size);
                 }
             } else {
+                sizes = [];
                 setAvailableSizesForColor([]);
                 setSelectedSize(null);
             }
@@ -246,7 +249,7 @@ const ProductDetailPage: React.FC = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 md:p-8 text-pink">
+        <div className="container mx-auto p-4 md:p-8 text-white">
             {isWholesaleActive && (
                 <div className="bg-green-600 text-white text-center py-2 mb-4 rounded">
                     🎉 Preços de atacado ativados! (5+ produtos)
@@ -257,13 +260,13 @@ const ProductDetailPage: React.FC = () => {
                     <ProductImageGallery images={imagesToDisplay} productName={product.name} />
                 </div>
                 <div className="lg:w-1/2 flex flex-col justify-start sticky top-20 h-fit">
-                    <h1 className="text-3xl lg:text-4xl tracking-widest mb-4">{product.name}</h1>
+                    <h1 className="text-3xl md:text-4xl tracking-widest mb-4 line-clamp-2">{product.name}</h1>
                     <div className="text-base lg:text-base mb-3 tracking-widest text-white">
                         {isWholesaleActive && hasWholesale ? (
                             <div>
                                 <span className="text-green-400 font-bold text-xl">R$ {currentPrice.toFixed(2)}</span>
                                 <div className="text-sm text-gray-400 line-through">
-                                    Antes: R$ {product.price.toFixed(2)}
+                                    Antes: R$ {Number(product.price).toFixed(2)}
                                 </div>
                             </div>
                         ) : (
@@ -281,7 +284,7 @@ const ProductDetailPage: React.FC = () => {
                             onSelectSize={setSelectedSize}
                         />
                     )}
-                    <div className="flex flex-row items-center gap-4 w-full mt-4">
+                    <div className="flex flex-row items-center justify-center gap-4 w-full mt-4">
                         <ProductQuantitySelector
                             quantity={quantity}
                             onQuantityChange={setQuantity}
