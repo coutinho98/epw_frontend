@@ -219,7 +219,7 @@ const ProductDetailPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+            <div className="min-h-screen  text-white flex flex-col items-center justify-center">
                 <p className="text-lg">Carregando produto...</p>
             </div>
         );

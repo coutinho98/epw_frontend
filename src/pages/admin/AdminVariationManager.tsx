@@ -51,7 +51,7 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
             images: []
         });
         setExistingImageUrls(variant.imageUrls || []);
-        setImagePreviewUrls([]); 
+        setImagePreviewUrls([]);
     };
 
     const handleClearForm = () => {
@@ -76,7 +76,7 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
             formData.append('additionalPrice', newVariant.additionalPrice.toString());
             formData.append('productId', product.id);
             formData.append('sku', newVariant.sku);
-            
+
             existingImageUrls.forEach(url => {
                 formData.append('imageUrls', url);
             });
@@ -92,7 +92,7 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                 await api.post(`/variants`, formData);
                 toast.success('Variação adicionada com sucesso!');
             }
-            
+
             onSuccess();
             handleClearForm();
         } catch (err: any) {
@@ -175,7 +175,7 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                     ) : (
                         <p className="mt-4 text-gray-400">Este produto não possui variações.</p>
                     )}
-                    
+
                     <div className="mt-6">
                         <h3 className="text-lg font-semibold text-white mb-4">
                             {editingVariantId ? 'Editar Variação' : 'Adicionar Nova Variação'}
@@ -183,23 +183,23 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                         <form onSubmit={handleAddOrUpdateVariant} className="space-y-4">
                             <div>
                                 <Label htmlFor="size" className="text-white">Tamanho</Label>
-                                <Input id="size" value={newVariant.size} onChange={e => setNewVariant({...newVariant, size: e.target.value})} className="text-white bg-zinc-900 border-gray-700" required />
+                                <Input id="size" value={newVariant.size} onChange={e => setNewVariant({ ...newVariant, size: e.target.value })} className="text-white bg-zinc-900 border-gray-700" required />
                             </div>
                             <div>
                                 <Label htmlFor="color" className="text-white">Cor</Label>
-                                <Input id="color" value={newVariant.color} onChange={e => setNewVariant({...newVariant, color: e.target.value})} className="text-white bg-zinc-900 border-gray-700" required />
+                                <Input id="color" value={newVariant.color} onChange={e => setNewVariant({ ...newVariant, color: e.target.value })} className="text-white bg-zinc-900 border-gray-700" required />
                             </div>
                             <div>
                                 <Label htmlFor="sku" className="text-white">SKU</Label>
-                                <Input id="sku" value={newVariant.sku} onChange={e => setNewVariant({...newVariant, sku: e.target.value})} className="text-white bg-zinc-900 border-gray-700" required />
+                                <Input id="sku" value={newVariant.sku} onChange={e => setNewVariant({ ...newVariant, sku: e.target.value })} className="text-white bg-zinc-900 border-gray-700" required />
                             </div>
                             <div>
                                 <Label htmlFor="stock" className="text-white">Estoque</Label>
-                                <Input id="stock" type="number" value={newVariant.stock} onChange={e => setNewVariant({...newVariant, stock: parseInt(e.target.value) || 0})} className="text-white bg-zinc-900 border-gray-700" required />
+                                <Input id="stock" type="number" value={newVariant.stock} onChange={e => setNewVariant({ ...newVariant, stock: parseInt(e.target.value) || 0 })} className="text-white bg-zinc-900 border-gray-700" required />
                             </div>
                             <div>
                                 <Label htmlFor="additionalPrice" className="text-white">Preço Adicional</Label>
-                                <Input id="additionalPrice" type="number" value={newVariant.additionalPrice} onChange={e => setNewVariant({...newVariant, additionalPrice: parseFloat(e.target.value) || 0})} step="0.01" className="text-white bg-zinc-900 border-gray-700" required />
+                                <Input id="additionalPrice" type="number" value={newVariant.additionalPrice} onChange={e => setNewVariant({ ...newVariant, additionalPrice: parseFloat(e.target.value) || 0 })} step="0.01" className="text-white bg-zinc-900 border-gray-700" required />
                             </div>
                             <div>
                                 <Label htmlFor="images" className="text-white">Imagens (arquivos)</Label>
@@ -223,13 +223,13 @@ const AdminVariationManager: React.FC<AdminVariationManagerProps> = ({ isOpen, o
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex justify-end gap-2">
                                 {editingVariantId && (
-                                    <Button type="button" onClick={handleClearForm} variant="outline" className="w-full bg-transparent text-white hover:bg-gray-700 border-gray-700">
+                                    <Button type="button" onClick={handleClearForm} variant="outline" className="bg-transparent text-white hover:bg-gray-700 border-gray-700">
                                         Cancelar
                                     </Button>
                                 )}
-                                <Button type="submit" className="w-full bg-white text-black hover:bg-gray-300">
+                                <Button type="submit" className="bg-white text-black hover:bg-gray-300">
                                     {editingVariantId ? 'Salvar Variação' : 'Adicionar Variação'}
                                 </Button>
                             </div>
